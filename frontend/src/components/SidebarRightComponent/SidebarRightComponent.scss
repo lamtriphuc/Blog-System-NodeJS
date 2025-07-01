@@ -1,0 +1,15 @@
+.sidebar-right {
+    width: 180px;
+    border-left: 1px solid #ccc;
+    height: 100vh;
+}
+
+.sidebar-item:hover {
+    cursor: pointer;
+    background-color: #ccc;
+    border-radius: 6px;
+}
+
+i {
+  font-size: 1.25rem;
+}
