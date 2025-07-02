@@ -1,11 +1,13 @@
+import PostComponent from "../../components/PostComponent/PostComponent";
+
 const HomePage = () => {
   return (
-    <div className="">
-      <div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam
-        aliquam excepturi alias ea sapiente at quasi labore pariatur aut
-        exercitationem.
-      </div>
+    <div>
+      <h5 className="py-2">Bài viết thú vị dành cho bạn</h5>
+      <PostComponent />
+      <PostComponent />
+      <PostComponent />
+      <PostComponent />
     </div>
   );
 };

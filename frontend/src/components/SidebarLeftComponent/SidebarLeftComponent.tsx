@@ -1,8 +1,8 @@
-import "./SidebarLeftComponent.scss";
+import "./SidebarLeftComponent.css";
 
 const SidebarComponent = () => {
   return (
-    <div className="sidebar pt-2">
+    <div className="sidebar-left pt-2">
       <div className="sidebar-item p-2 m-2 d-flex align-items-center gap-2">
         <i className="bi bi-house-door-fill"></i>
         <span>Trang chủ</span>

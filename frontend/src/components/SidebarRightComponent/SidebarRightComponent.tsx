@@ -1,5 +1,5 @@
 import TagComponent from "../TagComponent/TagComponent";
-import "./SidebarRightComponent.scss";
+import "./SidebarRightComponent.css";
 
 const SidebarRightComponent = () => {
   return (

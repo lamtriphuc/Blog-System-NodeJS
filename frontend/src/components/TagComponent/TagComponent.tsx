@@ -1,4 +1,4 @@
-import "./TagComponent.scss";
+import "./TagComponent.css";
 
 type tagProps = {
   tagName: string;

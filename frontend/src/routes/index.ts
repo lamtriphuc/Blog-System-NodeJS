@@ -13,15 +13,20 @@ export const routes = [
   {
     path: "/login",
     page: LoginPage,
-    isShowHeader: true,
+    isShowHeader: false,
   },
   {
     path: "/register",
     page: RegisterPage,
-    isShowHeader: true,
+    isShowHeader: false,
   },
   {
     path: "/profile",
+    page: UserProfilePage,
+    isShowHeader: true,
+  },
+  {
+    path: "/tag",
     page: UserProfilePage,
     isShowHeader: true,
   },

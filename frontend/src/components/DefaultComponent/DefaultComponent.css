@@ -1,0 +1,24 @@
+.content {
+  top: 60px;
+  overflow: hidden;
+}
+
+.fixed-sidebar {
+  position: fixed;
+  height: calc(100vh - 60px);
+}
+
+.sidebar-left {
+  border-right: 1px solid #ccc;
+}
+
+.sidebar-right {
+  right: max((100vw - 1320px) / 2, 12px);
+}
+
+.main-content {
+  margin: 0 180px;
+  height: 3000px;
+  overflow-y: auto;
+  border-right: 1px solid #ccc;
+}

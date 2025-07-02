@@ -1,0 +1,70 @@
+.post-container {
+  border-top: 1px solid #ccc;
+}
+
+.post {
+  cursor: pointer;
+}
+
+.post:hover {
+  background-color: #f6f8f9;
+  border-radius: 6px;
+}
+
+.post-credit {
+  font-size: 13px;
+}
+
+.bi-dot {
+  color: #212529;
+  font-size: 13px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 20px;
+}
+
+.post-interact {
+  color: black;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.post-interact > div {
+  background-color: rgb(229, 235, 238);
+  border-radius: 20px;
+  min-width: 30px;
+}
+
+.vote {
+  width: fit-content;
+  background-color: #e5ebee;
+  border-radius: 20px;
+}
+
+.vote-item {
+  width: 30px;
+  height: 30px;
+}
+
+.bookmark:hover,
+.comment:hover,
+.vote-item:hover {
+  background-color: #dbe4e9;
+  border-radius: 20px;
+}
+.vote-item:hover .bi-arrow-up-circle {
+  color: red;
+}
+.vote-item:hover .bi-arrow-down-circle {
+  color: blue;
+}
+
+.comment {
+}
+
+.bi-bookmark {
+  font-size: 18px;
+}
