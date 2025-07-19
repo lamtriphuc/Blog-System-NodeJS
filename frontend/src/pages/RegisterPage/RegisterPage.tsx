@@ -5,15 +5,26 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [reTypePassword, setReTypePassword] = useState("");
+  const [name, setName] = useState("");
 
   const handleLogin = () => {
-    console.log(email, password, reTypePassword);
+    console.log(email, password, reTypePassword, name);
   };
 
   return (
     <div className="login-container d-flex justify-content-center align-items-center min-vh-100 bg-secondary">
       <div className="login-form w-25 bg-light p-4">
         <h6 className="text-center">Đăng ký</h6>
+        <label htmlFor="inputName" className="form-label">
+          Tên
+        </label>
+        <input
+          type="name"
+          id="inputName"
+          className="form-control"
+          aria-describedby="passwordHelpBlock"
+          onChange={(e) => setName(e.target.value)}
+        ></input>
         <label htmlFor="inputEmail" className="form-label">
           Email
         </label>

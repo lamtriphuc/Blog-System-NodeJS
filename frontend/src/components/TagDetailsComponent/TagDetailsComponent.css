@@ -1,0 +1,21 @@
+.tag-details {
+  width: 265px;
+  max-width: 265px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.tag-description {
+  font-size: 14px;
+}
+.num-of-post {
+  font-size: 12px;
+}
+
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* 👈 Số dòng muốn hiển thị */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

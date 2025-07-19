@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { routes } from "./routes";
 import DefaultComponent from "./components/DefaultComponent/DefaultComponent";
-import { Fragment } from "react/jsx-runtime";
+import DefaultComponentNotSideBar from "./components/DefaultComponentNotSideBar/DefaultComponentNotSideBar";
 
 function App() {
   return (
@@ -10,7 +10,9 @@ function App() {
         <Routes>
           {routes.map((route, index) => {
             const Page = route.page;
-            const Layout = route.isShowHeader ? DefaultComponent : Fragment;
+            const Layout = route.isShowSidebarRight
+              ? DefaultComponent
+              : DefaultComponentNotSideBar;
             return (
               <Route
                 key={index}

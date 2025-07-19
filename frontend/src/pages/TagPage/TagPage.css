@@ -1,0 +1,12 @@
+.bi-search {
+  font-size: 14px;
+}
+
+.input-group-text {
+  border-right: none !important;
+  background-color: #fff !important;
+}
+
+.tag-container {
+  /* gap: 30px; */
+}
