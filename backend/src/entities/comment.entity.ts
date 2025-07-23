@@ -1,23 +1,21 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { User } from './user.entity';
-import { Post } from './post.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { UserEntity } from './user.entity';
+import { PostEntity } from './post.entity';
 
 @Entity('comments')
-export class Comment {
+export class CommentEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User, user => user.comments, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'user_id' })
-    user: User;
+    @ManyToOne(() => UserEntity, user => user.comments, { onDelete: 'CASCADE' })
+    user: UserEntity;
 
-    @ManyToOne(() => Post, post => post.comments, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'post_id' })
-    post: Post;
+    @ManyToOne(() => PostEntity, post => post.comments, { onDelete: 'CASCADE' })
+    post: PostEntity;
 
     @Column('text')
     content: string;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+    @CreateDateColumn()
+    created_at: Date;
 }

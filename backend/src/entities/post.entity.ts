@@ -1,28 +1,23 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
-    ManyToOne,
-    OneToMany,
-    JoinColumn,
+    Entity, PrimaryGeneratedColumn, Column, CreateDateColumn,
+    UpdateDateColumn, ManyToOne, OneToMany, ManyToMany, JoinTable,
+    JoinColumn
 } from 'typeorm';
-import { User } from './user.entity';
-import { Comment } from './comment.entity';
-import { Vote } from './vote.entity';
-import { SavedPost } from './saved-post.entity';
-import { PostImage } from './post-image.entity';
-import { PostTag } from './post-tag.entity';
+import { UserEntity } from './user.entity';
+import { CommentEntity } from './comment.entity';
+import { VoteEntity } from './vote.entity';
+import { PostImageEntity } from './post-image.entity';
+import { TagEntity } from './tag.entity';
+import { SavedPostEntity } from './saved-post.entity';
 
 @Entity('posts')
-export class Post {
+export class PostEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User, user => user.posts, { onDelete: 'CASCADE' })
+    @ManyToOne(() => UserEntity, user => user.posts, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'user_id' })
-    user: User;
+    user: UserEntity;
 
     @Column('text')
     title: string;
@@ -30,24 +25,29 @@ export class Post {
     @Column('text')
     content: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
 
-    @OneToMany(() => PostImage, img => img.post)
-    images: PostImage[];
+    @OneToMany(() => PostImageEntity, image => image.post)
+    images: PostImageEntity[];
 
-    @OneToMany(() => Comment, comment => comment.post)
-    comments: Comment[];
+    @OneToMany(() => CommentEntity, comment => comment.post)
+    comments: CommentEntity[];
 
-    @OneToMany(() => Vote, vote => vote.post)
-    votes: Vote[];
+    @OneToMany(() => VoteEntity, vote => vote.post)
+    votes: VoteEntity[];
 
-    @OneToMany(() => PostTag, postTag => postTag.post)
-    postTags: PostTag[];
+    @ManyToMany(() => TagEntity, tag => tag.posts)
+    @JoinTable({
+        name: 'post_tags',
+        joinColumn: { name: 'post_id' },
+        inverseJoinColumn: { name: 'tag_id' },
+    })
+    tags: TagEntity[];
 
-    @OneToMany(() => SavedPost, saved => saved.post)
-    savedPosts: SavedPost[];
+    @OneToMany(() => SavedPostEntity, saved => saved.post)
+    savedBy: SavedPostEntity[];
 }

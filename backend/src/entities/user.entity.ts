@@ -1,11 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
-import { Post } from './post.entity';
-import { Comment } from './comment.entity';
-import { Vote } from './vote.entity';
-import { SavedPost } from './saved-post.entity';
+import { PostEntity } from './post.entity';
+import { CommentEntity } from './comment.entity';
+import { VoteEntity } from './vote.entity';
+import { SavedPostEntity } from './saved-post.entity';
 
 @Entity('users')
-export class User {
+export class UserEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -15,14 +15,14 @@ export class User {
     @Column({ length: 100, unique: true })
     email: string;
 
-    @Column({ name: 'password_hash' })
-    passwordHash: string;
+    @Column('text')
+    password_hash: string;
 
     @Column({ length: 255, nullable: true })
     bio: string;
 
-    @Column('text', { name: 'avatar_url', nullable: true })
-    avatar: string;
+    @Column('text', { nullable: true })
+    avatar_url: string;
 
     @Column({ type: 'int', default: 0 })
     role: number;
@@ -30,15 +30,15 @@ export class User {
     @CreateDateColumn()
     created_at: Date;
 
-    @OneToMany(() => Post, post => post.user)
-    posts: Post[];
+    @OneToMany(() => PostEntity, post => post.user)
+    posts: PostEntity[];
 
-    @OneToMany(() => Comment, comment => comment.user)
-    comments: Comment[];
+    @OneToMany(() => CommentEntity, comment => comment.user)
+    comments: CommentEntity[];
 
-    @OneToMany(() => Vote, vote => vote.user)
-    votes: Vote[];
+    @OneToMany(() => VoteEntity, vote => vote.user)
+    votes: VoteEntity[];
 
-    @OneToMany(() => SavedPost, saved => saved.user)
-    savedPosts: SavedPost[];
+    @OneToMany(() => SavedPostEntity, saved => saved.user)
+    savedPosts: SavedPostEntity[];
 }

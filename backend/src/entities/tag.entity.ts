@@ -1,14 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { PostTag } from './post-tag.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+import { PostEntity } from './post.entity';
 
 @Entity('tags')
-export class Tag {
+export class TagEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column({ length: 30, unique: true })
     name: string;
 
-    @OneToMany(() => PostTag, postTag => postTag.tag)
-    postTags: PostTag[];
+    @ManyToMany(() => PostEntity, post => post.tags)
+    posts: PostEntity[];
 }

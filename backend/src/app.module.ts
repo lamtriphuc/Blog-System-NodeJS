@@ -5,6 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseService } from './testdb/Database.service';
+import { PostsModule } from './modules/posts/posts.module';
+import { PostEntity } from './entities/post.entity';
+import { UserEntity } from './entities/user.entity';
+import { CommentEntity } from './entities/comment.entity';
+import { VoteEntity } from './entities/vote.entity';
+import { SavedPostEntity } from './entities/saved-post.entity';
+import { PostImageEntity } from './entities/post-image.entity';
+import { TagEntity } from './entities/tag.entity';
 
 @Module({
   imports: [
@@ -16,9 +24,10 @@ import { DatabaseService } from './testdb/Database.service';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [],
+      entities: [UserEntity, PostEntity, CommentEntity, VoteEntity, SavedPostEntity, PostImageEntity, TagEntity],
       synchronize: true,
     }),
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseService],

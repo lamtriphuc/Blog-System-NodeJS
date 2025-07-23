@@ -1,15 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Post } from './post.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { PostEntity } from './post.entity';
 
 @Entity('post_images')
-export class PostImage {
+export class PostImageEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Post, post => post.images, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'post_id' })
-    post: Post;
+    @ManyToOne(() => PostEntity, post => post.images, { onDelete: 'CASCADE' })
+    post: PostEntity;
 
-    @Column('text', { name: 'image_url' })
-    imageUrl: string;
+    @Column('text')
+    image_url: string;
 }

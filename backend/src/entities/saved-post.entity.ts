@@ -1,23 +1,21 @@
-import { Entity, ManyToOne, CreateDateColumn, PrimaryColumn, Column, JoinColumn } from 'typeorm';
-import { User } from './user.entity';
-import { Post } from './post.entity';
+import { Entity, ManyToOne, PrimaryColumn, CreateDateColumn } from 'typeorm';
+import { UserEntity } from './user.entity';
+import { PostEntity } from './post.entity';
 
 @Entity('saved_posts')
-export class SavedPost {
+export class SavedPostEntity {
     @PrimaryColumn()
-    userId: number;
+    user_id: number;
 
     @PrimaryColumn()
-    postId: number;
+    post_id: number;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+    @ManyToOne(() => UserEntity, user => user.savedPosts, { onDelete: 'CASCADE' })
+    user: UserEntity;
 
-    @ManyToOne(() => User, user => user.savedPosts, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'user_id' })
-    user: User;
+    @ManyToOne(() => PostEntity, post => post.savedBy, { onDelete: 'CASCADE' })
+    post: PostEntity;
 
-    @ManyToOne(() => Post, post => post.savedPosts, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'post_id' })
-    post: Post;
+    @CreateDateColumn()
+    created_at: Date;
 }
