@@ -13,6 +13,7 @@ import { VoteEntity } from './entities/vote.entity';
 import { SavedPostEntity } from './entities/saved-post.entity';
 import { PostImageEntity } from './entities/post-image.entity';
 import { TagEntity } from './entities/tag.entity';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { TagEntity } from './entities/tag.entity';
       synchronize: true,
     }),
     PostsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseService],

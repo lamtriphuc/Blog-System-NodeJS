@@ -30,8 +30,6 @@ export class PostsService {
                 user: { id: userId } as UserEntity
             });
 
-            console.log(newPost)
-
             return this.postRepository.save(newPost);
         } catch (error) {
             throw new InternalServerErrorException('Tạo bài viết thất bại!');

@@ -15,20 +15,20 @@ export class UserEntity {
     @Column({ length: 100, unique: true })
     email: string;
 
-    @Column('text')
-    password_hash: string;
+    @Column('text', { name: 'passworn_hash' })
+    passwordHash: string;
 
     @Column({ length: 255, nullable: true })
     bio: string;
 
-    @Column('text', { nullable: true })
-    avatar_url: string;
+    @Column('text', { nullable: true, name: 'avatar_url' })
+    avataeUrl: string;
 
     @Column({ type: 'int', default: 0 })
     role: number;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 
     @OneToMany(() => PostEntity, post => post.user)
     posts: PostEntity[];
