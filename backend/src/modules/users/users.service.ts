@@ -1,8 +1,9 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -43,6 +44,16 @@ export class UsersService {
     //     }
     // }
 
+    async findByEmail(email: string): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { email }
+        })
+        if (user) {
+            return user;
+        }
+        return null;
+    }
+
     async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
         const { username, email, password } = createUserDto;
 
@@ -59,12 +70,43 @@ export class UsersService {
             }
         }
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const user = {
             ...createUserDto,
-            passwordHash: password
+            passwordHash: hashedPassword
         }
 
         const newUser = this.userRepository.create(user);
         return this.userRepository.save(newUser);
+    }
+
+    async getAllUser(): Promise<any[]> {
+        const users = await this.userRepository.find();
+
+        const result = users.map(({ passwordHash, ...data }) => data);
+        return result;
+    }
+
+    async updateUser(id: number, updateUser: CreateUserDto): Promise<UserEntity> {
+        const { username } = updateUser;
+
+        const existingUser = await this.userRepository.findOne({
+            where: [{ id }, { username }]
+        });
+
+        if (!existingUser) {
+            throw new NotFoundException('Tài khoản không tồn tại');
+        } else {
+            if (existingUser.username === username) {
+                throw new ConflictException('Tên người dùng đã tồn tại');
+            }
+        }
+
+        const updatedUser = await this.userRepository.save({
+            ...existingUser,
+            ...updateUser
+        })
+        return updatedUser;
     }
 }

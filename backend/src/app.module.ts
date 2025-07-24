@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,6 +14,8 @@ import { SavedPostEntity } from './entities/saved-post.entity';
 import { PostImageEntity } from './entities/post-image.entity';
 import { TagEntity } from './entities/tag.entity';
 import { UsersModule } from './modules/users/users.module';
+import { LoggingMiddleware } from './middleware/logging/logging.middleware';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -30,10 +32,25 @@ import { UsersModule } from './modules/users/users.module';
     }),
     PostsModule,
     UsersModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseService],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) { }
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggingMiddleware)
+      .forRoutes(
+        {
+          path: '/users',
+          method: RequestMethod.GET
+        },
+        {
+          path: '/products',
+          method: RequestMethod.POST
+        }
+      )
+  }
 }

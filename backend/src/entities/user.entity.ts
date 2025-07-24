@@ -22,7 +22,7 @@ export class UserEntity {
     bio: string;
 
     @Column('text', { nullable: true, name: 'avatar_url' })
-    avataeUrl: string;
+    avatarUrl: string;
 
     @Column({ type: 'int', default: 0 })
     role: number;
