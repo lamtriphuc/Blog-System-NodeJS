@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
 import AuthService from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -19,5 +19,17 @@ export class AuthController {
     @Get('profile')
     getProfile(@Request() req: any) {
         return req.user;
+    }
+
+    @Post('refresh-token')
+    refreshToken(@Body() { refreshToken }: { refreshToken: string }) {
+        if (!refreshToken) {
+            throw new BadRequestException('Không có Refresh Token');
+        }
+        const user = this.authService.verifyRefreshToken(refreshToken);
+        if (!user) {
+            throw new UnauthorizedException('Refresh Token không hợp lệ');
+        }
+        return this.authService.login(user);
     }
 }

@@ -54,6 +54,28 @@ export class UsersService {
         return null;
     }
 
+    async saveRefreshToken(userId: number, refreshToken: string) {
+        const user = await this.userRepository.findOneBy({ id: userId });
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+        const hashedRefreshToken = bcrypt.hashSync(refreshToken, 10);
+        user.refreshToken = hashedRefreshToken;
+
+        return this.userRepository.save(user);
+    }
+
+    async verifyRefreshToken(userId: number, refreshToken: string) {
+        const user = await this.userRepository.findOneBy({ id: userId });
+        if (user) {
+            const isMatch = bcrypt.compareSync(refreshToken, user.refreshToken);
+            if (isMatch) {
+                return user;
+            }
+        }
+        return false;
+    }
+
     async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
         const { username, email, password } = createUserDto;
 
