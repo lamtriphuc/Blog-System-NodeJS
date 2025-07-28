@@ -9,6 +9,9 @@ export class TagEntity {
     @Column({ length: 30, unique: true })
     name: string;
 
+    @Column({ nullable: true })
+    description: string;
+
     @ManyToMany(() => PostEntity, post => post.tags)
     posts: PostEntity[];
 }

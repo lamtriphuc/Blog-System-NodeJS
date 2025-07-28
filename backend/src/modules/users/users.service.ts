@@ -4,6 +4,7 @@ import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -110,7 +111,7 @@ export class UsersService {
         return result;
     }
 
-    async updateUser(id: number, updateUser: CreateUserDto): Promise<UserEntity> {
+    async updateUser(id: number, updateUser: UpdateUserDto): Promise<UserEntity> {
         const { username } = updateUser;
 
         const existingUser = await this.userRepository.findOne({

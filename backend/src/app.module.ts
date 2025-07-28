@@ -16,6 +16,8 @@ import { TagEntity } from './entities/tag.entity';
 import { UsersModule } from './modules/users/users.module';
 import { LoggingMiddleware } from './middleware/logging/logging.middleware';
 import { AuthModule } from './modules/auth/auth.module';
+import { TagModule } from './modules/tags/tag.module';
+import { SavePostModule } from './modules/save-posts/save-post.module';
 
 @Module({
   imports: [
@@ -32,7 +34,9 @@ import { AuthModule } from './modules/auth/auth.module';
     }),
     PostsModule,
     UsersModule,
-    AuthModule
+    AuthModule,
+    TagModule,
+    SavePostModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseService],

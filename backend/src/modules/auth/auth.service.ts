@@ -44,4 +44,9 @@ export default class AuthService {
         }
         return false;
     }
+
+    async getProfile(user: any): Promise<any> {
+        const { passwordHash, refreshToken, ...data } = user;
+        return data;
+    }
 }

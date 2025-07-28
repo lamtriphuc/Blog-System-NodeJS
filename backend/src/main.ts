@@ -3,13 +3,16 @@ import { AppModule } from './app.module';
 import { ValidationError } from 'class-validator';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { LoggingMiddleware } from './middleware/logging/logging.middleware';
+import { configureCloudinary } from './common/configs/cloudinary.config';
 declare const module: any;
 
 async function bootstrap() {
+  configureCloudinary();
   const app = await NestFactory.create(AppModule);
   // app.use(new LoggingMiddleware().use);
   app.useGlobalPipes(
     new ValidationPipe({
+      transform: true,
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
         return new BadRequestException(
           validationErrors.map((error) => ({
