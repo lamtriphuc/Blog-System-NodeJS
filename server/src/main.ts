@@ -5,6 +5,7 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { LoggingMiddleware } from './middleware/logging/logging.middleware';
 import { configureCloudinary } from './common/configs/cloudinary.config';
 declare const module: any;
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   configureCloudinary();
@@ -16,6 +17,7 @@ async function bootstrap() {
     credentials: true,
   })
 
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

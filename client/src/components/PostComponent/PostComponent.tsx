@@ -8,7 +8,6 @@ type PostDetailsProps = {
 }
 
 const PostComponent: React.FC<PostDetailsProps> = ({ post }) => {
-  console.log('post', post)
   return (
     <div className="post-container">
       <div className="post p-2 my-2">
@@ -31,7 +30,7 @@ const PostComponent: React.FC<PostDetailsProps> = ({ post }) => {
             {post.title}
           </h5>
         </div>
-        <div className="post-content my-2">
+        <div className="post-content my-2 text-truncate-2">
           {post.content}
         </div>
         <div className="post-interact d-flex gap-3">
@@ -39,7 +38,7 @@ const PostComponent: React.FC<PostDetailsProps> = ({ post }) => {
             <span className="vote-item d-flex justify-content-center align-items-center">
               <i className="bi bi-arrow-up-circle"></i>
             </span>
-            <span>100</span>
+            <span>{post.upVoteCount}</span>
             <span className="vote-item d-flex justify-content-center align-items-center">
               <i className="bi bi-arrow-down-circle"></i>
             </span>
@@ -48,7 +47,7 @@ const PostComponent: React.FC<PostDetailsProps> = ({ post }) => {
             <span>
               <i className="bi bi-chat-dots"></i>
             </span>
-            <span>19</span>
+            <span>{post.commentCount}</span>
           </div>
           <div className="bookmark d-flex justify-content-center align-items-center gap-1">
             <span>

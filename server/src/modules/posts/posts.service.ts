@@ -94,7 +94,7 @@ export class PostsService {
             order: {
                 createdAt: 'DESC'
             },
-            relations: ['user', 'tags', 'images']
+            relations: ['user', 'tags', 'images', 'votes', 'comments']
         })
         return posts.map(post => new PostResponseDto(post));
     }

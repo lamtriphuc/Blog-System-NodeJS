@@ -60,7 +60,7 @@ export class UsersService {
         if (!user) {
             throw new NotFoundException('User not found');
         }
-        const hashedRefreshToken = bcrypt.hashSync(refreshToken, 10);
+        const hashedRefreshToken = await bcrypt.hashSync(refreshToken, 10);
         user.refreshToken = hashedRefreshToken;
 
         return this.userRepository.save(user);
@@ -68,13 +68,13 @@ export class UsersService {
 
     async verifyRefreshToken(userId: number, refreshToken: string) {
         const user = await this.userRepository.findOneBy({ id: userId });
-        if (user) {
-            const isMatch = bcrypt.compareSync(refreshToken, user.refreshToken);
-            if (isMatch) {
-                return user;
-            }
-        }
-        return false;
+        if (!user || !user.refreshToken) return null;
+        const isMatch = await bcrypt.compare(refreshToken, user.refreshToken);
+        return isMatch ? user : null;
+    }
+
+    async removeRefreshToken(userId: number) {
+        await this.userRepository.update(userId, { refreshToken: '' });
     }
 
     async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {

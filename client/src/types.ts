@@ -15,4 +15,6 @@ export type PostData = {
     avatar: string;
   }
   createdAt: Date;
+  upVoteCount: number;
+  commentCount: number;
 }

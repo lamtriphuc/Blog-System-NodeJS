@@ -15,6 +15,8 @@ export class PostResponseDto {
         username: string;
         avatar: string;
     };
+    upVoteCount: number;
+    commentCount: number;
 
     constructor(post: PostEntity) {
         this.id = post.id;
@@ -29,5 +31,7 @@ export class PostResponseDto {
             username: post.user.username,
             avatar: post.user.avatarUrl
         };
+        this.upVoteCount = post.votes?.length || 0;
+        this.commentCount = post.comments?.length || 0;
     }
 }

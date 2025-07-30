@@ -32,7 +32,7 @@
   font-weight: bold;
 }
 
-.post-interact > div {
+.post-interact>div {
   background-color: rgb(229, 235, 238);
   border-radius: 20px;
   min-width: 30px;
@@ -55,16 +55,27 @@
   background-color: #dbe4e9;
   border-radius: 20px;
 }
+
 .vote-item:hover .bi-arrow-up-circle {
   color: red;
 }
+
 .vote-item:hover .bi-arrow-down-circle {
   color: blue;
 }
 
-.comment {
-}
+.comment {}
 
 .bi-bookmark {
   font-size: 18px;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /* Số dòng muốn hiển thị */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
 }
