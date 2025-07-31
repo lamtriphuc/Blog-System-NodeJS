@@ -55,8 +55,8 @@ export class AuthController {
             httpOnly: true,
             secure: false,
             sameSite: 'lax',
-            path: '/api/auth/refresh-token',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path: '/',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
         });
 
         return { access_token: accessToken };
@@ -72,12 +72,13 @@ export class AuthController {
         // Xoá cookie phía FE
         res.clearCookie('refreshToken', {
             httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            path: '/api/auth/refresh-token',
+            secure: false,
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
         });
 
-        return { message: 'Logout successful' };
+        return new ResponseData(null, HttpStatus.OK, 'Đăng xuất thành công');
     }
 
 }

@@ -4,6 +4,8 @@ import { getAllPost } from "../../api/postApi";
 import { useQuery } from "@tanstack/react-query";
 import type { PostData } from "../../types";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { clearUser } from "../../store/authSlice";
 
 const fetchAllPosts = async () => {
   const { data } = await getAllPost();
@@ -11,21 +13,15 @@ const fetchAllPosts = async () => {
 }
 
 const HomePage = () => {
+  const dispatch = useDispatch();
+
   const { data: posts, isLoading, error } = useQuery<PostData[]>({
     queryKey: ['posts'],
     queryFn: fetchAllPosts
   })
 
-  console.log('data > ', posts, isLoading);
-
   if (isLoading) return < p > Loading...</p >;
   if (error) return <p>Error: {(error as Error).message}</p>;
-
-  const logout = async () => {
-    await axios.post('/auth/logout'); // sẽ tự gửi cookie
-    localStorage.removeItem('accessToken');
-    window.location.href = '/login';
-  };
 
   return (
     <div>

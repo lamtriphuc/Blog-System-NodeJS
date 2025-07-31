@@ -1,6 +1,6 @@
 export type TagData = {
-  tagName: string;
-  desciption: string;
+  name: string;
+  description: string;
   totalPost: number;
   postToday: number;
 };

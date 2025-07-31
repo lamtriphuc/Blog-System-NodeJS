@@ -1,8 +1,12 @@
 import { useState } from "react";
 import "./LoginPage.css";
-import { loginUser } from "../../api/authApi";
+import { getUserProfile, loginUser } from "../../api/authApi";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../../store/authSlice";
+import type { RootState } from "../../store";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -10,47 +14,34 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const dispatch = useDispatch();
 
-  // const handleLogin = async () => {
-  //   try {
-  //     setError(null);
-  //     const res = await loginUser(email, password);
-  //     console.log(res)
-  //     localStorage.setItem('accessToken', res.access_token);
-  //     navigate('/')
-  //   } catch (error) {
-  //     if (axios.isAxiosError(error)) {
-  //       const message = error.response?.data?.message;
 
-  //       if (typeof message === 'string') {
-  //         toast.error(message); // hiển thị lỗi rõ ràng từ NestJS
-  //       } else if (Array.isArray(message)) {
-  //         toast.error(message[0]); // nếu trả về mảng lỗi
-  //       } else {
-  //         toast.error('Đăng nhập thất bại!');
-  //       }
-  //     } else {
-  //       console.log(error)
-  //       toast.error('Lỗi không xác định!');
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const loginMutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: async (data) => {
+      localStorage.setItem('accessToken', data.data.access_token);
+      toast.success(data.message);
+      try {
+        const profile = await queryClient.fetchQuery({
+          queryKey: ['profile'],
+          queryFn: getUserProfile,
+        });
+        dispatch(setUser(profile));
+        localStorage.setItem('userProfile', JSON.stringify(profile));
+        navigate('/');
+      } catch (err) {
+        console.log('Lấy profile thất bại. Err: ', err);
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || error.message);
+    },
+  })
 
   const handleLogin = async () => {
-    try {
-      setLoading(true);
-      const res = await loginUser(email, password); // nếu lỗi -> sẽ vào catch
-      console.log(res);
-      localStorage.setItem('accessToken', res.data.access_token);
-      toast.success('Đăng nhập thành công');
-      navigate('/');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
-    } finally {
-      setLoading(false);
-    }
+    loginMutation.mutate({ email, password });
   };
 
   return (
