@@ -13,7 +13,6 @@ const fetchAllPosts = async () => {
 }
 
 const HomePage = () => {
-  const dispatch = useDispatch();
 
   const { data: posts, isLoading, error } = useQuery<PostData[]>({
     queryKey: ['posts'],

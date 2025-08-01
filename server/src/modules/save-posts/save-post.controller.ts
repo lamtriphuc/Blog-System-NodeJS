@@ -3,7 +3,7 @@ import { SavePostService } from "./save-post.service";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ResponseData } from "src/global/globalClass";
 
-@Controller('api/save-posts')
+@Controller('api/saved-posts')
 @UseGuards(JwtAuthGuard)
 export class SavePostController {
     constructor(

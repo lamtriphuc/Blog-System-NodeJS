@@ -14,6 +14,7 @@ const HeaderComponent = () => {
   const handleLogout = async () => {
     try {
       const res = await logoutUser();
+      navigate('/')
       localStorage.removeItem('accessToken');
       dispatch(clearUser());
       localStorage.removeItem('userProfile');

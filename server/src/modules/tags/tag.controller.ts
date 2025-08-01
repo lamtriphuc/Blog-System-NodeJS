@@ -6,6 +6,7 @@ import { CreateTagDto } from "./dto/create-tag.dto";
 import { PostResponseDto } from "../posts/dto/response-post.dto";
 import { PostsService } from "../posts/posts.service";
 import { ResponseData } from "src/global/globalClass";
+import { TagResponseDto } from "./dto/response-tag.dto";
 
 @Controller('api/tags')
 export class TagController {
@@ -27,6 +28,12 @@ export class TagController {
     ): Promise<any> {
         const tags = this.tagService.getAllTag();
         return tags;
+    }
+
+    @Get('tag-trending')
+    async getTrendingTags(): Promise<ResponseData<TagResponseDto[]>> {
+        const tags = await this.tagService.getTrendingTags();
+        return new ResponseData<TagResponseDto[]>(tags, HttpStatus.OK, 'Lấy tag trending thành công')
     }
 
     @Get('/:tagId')

@@ -2,22 +2,21 @@ import { useQuery } from "@tanstack/react-query";
 import TagDetailsComponent from "../../components/TagDetailsComponent/TagDetailsComponent";
 import "./TagPage.css";
 import { getAllTag } from "../../api/tagApi";
-import { data } from "react-router-dom";
 import type { TagData } from "../../types";
 
-const fetchAllTags = async () => {
-  const data = await getAllTag(); // data chính là mảng ở trên
-  return data;
-};
+
 
 const TagPage = () => {
+  const fetchAllTags = async () => {
+    const data = await getAllTag(); // data chính là mảng ở trên
+    console.log(data)
+    return data;
+  };
 
-  const { data: tags, isLoading, error } = useQuery({
+  const { data: tags } = useQuery({
     queryKey: ['tags'],
     queryFn: fetchAllTags,
   });
-
-  console.log('tags', tags)
 
   return (
     <div className="d-flex flex-column align-items-start gap-4 w-100">
@@ -37,10 +36,7 @@ const TagPage = () => {
         </div>
       </div>
       <div className="tag-container w-100 d-flex flex-wrap gap-2">
-        {/* {tagList.map((tag, index) => (
-          <TagDetailsComponent key={index} tag={tag} />
-        ))} */}
-        {tags.map((tag: TagData, index: number) => (
+        {tags?.map((tag: TagData, index: number) => (
           <TagDetailsComponent key={index} tag={tag} />
         ))}
       </div>
