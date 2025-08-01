@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PostComponent from "../../components/PostComponent/PostComponent";
-import { getAllPost } from "../../api/postApi";
+import { getAllPost, getSavedPost } from "../../api/postApi";
 import { useQuery } from "@tanstack/react-query";
 import type { PostData } from "../../types";
 import axios from "axios";
@@ -12,11 +12,21 @@ const fetchAllPosts = async () => {
   return data;
 }
 
+const fetchSavedPosts = async () => {
+  const { data } = await getSavedPost();
+  return data;
+}
+
 const HomePage = () => {
 
   const { data: posts, isLoading, error } = useQuery<PostData[]>({
     queryKey: ['posts'],
     queryFn: fetchAllPosts
+  })
+
+  const { data: savedPosts } = useQuery({
+    queryKey: ['saved-post'],
+    queryFn: fetchSavedPosts
   })
 
   if (isLoading) return < p > Loading...</p >;
@@ -27,7 +37,10 @@ const HomePage = () => {
       <h5 className="py-2">Bài viết thú vị dành cho bạn</h5>
       {posts?.map(post => {
         return (
-          <PostComponent key={post.id} post={post} />
+          <PostComponent
+            key={post.id}
+            post={post}
+            isBookmark={savedPosts?.some((saved: any) => saved.id === post.id)} />
         )
       })}
     </div>

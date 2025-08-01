@@ -5,9 +5,10 @@ import dayjs from "../../utils/dayjs";
 
 type PostDetailsProps = {
   post: PostData;
+  isBookmark: boolean;
 }
 
-const PostComponent: React.FC<PostDetailsProps> = ({ post }) => {
+const PostComponent: React.FC<PostDetailsProps> = ({ post, isBookmark = false }) => {
   return (
     <div className="post-container">
       <div className="post p-2 my-2">
@@ -50,9 +51,15 @@ const PostComponent: React.FC<PostDetailsProps> = ({ post }) => {
             <span>{post.commentCount}</span>
           </div>
           <div className="bookmark d-flex justify-content-center align-items-center gap-1">
-            <span>
-              <i className="bi bi-bookmark"></i>
-            </span>
+            {!isBookmark ? (
+              <span>
+                <i className="bi bi-bookmark"></i>
+              </span>
+            ) : (
+              <span>
+                <i className="bi bi-bookmark-fill text-warning"></i>
+              </span>
+            )}
           </div>
         </div>
       </div>

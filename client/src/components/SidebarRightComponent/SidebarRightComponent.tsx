@@ -15,13 +15,11 @@ const SidebarRightComponent = () => {
     queryFn: fetchTagTrending
   })
 
-  console.log(tagTrending)
-
   return (
     <div className="sidebar-right p-2">
       <h6 className="pt-3">Thẻ thịnh hành</h6>
-      {tagTrending?.map((tag: TagData) => {
-        return <TagComponent tagName={tag.name} />
+      {tagTrending?.map((tag: TagData, index: number) => {
+        return <TagComponent key={index} tagName={tag.name} />
       })}
     </div>
   );

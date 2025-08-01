@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import "./BookmarkPage.css";
-import React from "react";
 import type { RootState } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { getSavedPost } from "../../api/postApi";
@@ -32,7 +31,7 @@ const BookmarkPage = () => {
       <h5 className="py-2">Bài viết thú vị dành cho bạn</h5>
       {savedPosts?.map((post: PostData) => {
         return (
-          <PostComponent key={post.id} post={post} />
+          <PostComponent key={post.id} post={post} isBookmark={true} />
         )
       })}
     </div>
