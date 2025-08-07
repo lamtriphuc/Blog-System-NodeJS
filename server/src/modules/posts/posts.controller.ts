@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe, Put, Delete, Req, UseGuards, Request, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe, Put, Delete, Req, UseGuards, Request, UseInterceptors, UploadedFiles, Patch } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { ResponseData } from 'src/global/globalClass';
 import { PostEntity } from 'src/entities/post.entity';
@@ -51,7 +51,7 @@ export class PostsController {
 
 
   @UseGuards(JwtAuthGuard)
-  @Put('/:id')
+  @Patch('/:id')
   async updatePost(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePostDto: UpdatePostDto

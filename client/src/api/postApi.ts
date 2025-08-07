@@ -20,3 +20,8 @@ export const getPostDetails = async ({ id }: { id: number }) => {
     const response = await axiosInstance.get(`/posts/${id}`);
     return response.data;
 }
+
+export const updatePost = async (id: number, data: { title: string; content: string }) => {
+    const response = await axiosInstance.patch(`/posts/${id}`, data);
+    return response.data;
+}

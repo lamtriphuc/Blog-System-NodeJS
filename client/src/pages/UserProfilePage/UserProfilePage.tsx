@@ -11,6 +11,7 @@ import { toast } from 'react-toastify'
 import PostComponent from '../../components/PostComponent/PostComponent'
 import { getPostByUser, getSavedPost } from '../../api/postApi'
 import type { PostData } from '../../types'
+import { useNavigate } from 'react-router-dom'
 
 const fetchPostsByUser = async () => {
   const { data } = await getPostByUser();
@@ -25,6 +26,7 @@ const UserProfilePage = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [username, setUsername] = useState('');
@@ -153,6 +155,7 @@ const UserProfilePage = () => {
               key={post.id}
               post={post}
               isBookmark={savedPosts?.some((saved: any) => saved.id === post.id)}
+              onClick={() => navigate(`/post-details/${post.id}`)}
             />
           )
         })}

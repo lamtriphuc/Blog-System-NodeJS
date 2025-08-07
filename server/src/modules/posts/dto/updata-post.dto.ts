@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class UpdatePostDto {
     @IsNotEmpty({ message: 'Tiêu đề không được bỏ trống' })
@@ -9,9 +9,11 @@ export class UpdatePostDto {
     @IsString()
     content: string;
 
+    @IsOptional()
     @IsArray()
     tagIds: number[];
 
+    @IsOptional()
     @IsArray()
     imageUrls: string[];
 }

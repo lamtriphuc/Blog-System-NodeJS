@@ -4,7 +4,8 @@ export class CommentResponseDto {
     id: number;
     user: {
         id: number;
-        username: string
+        username: string;
+        avatar: string;
     };
     // post: { id: number } | null;
     content: string;
@@ -15,7 +16,8 @@ export class CommentResponseDto {
         this.id = comment.id;
         this.user = {
             id: comment.user.id,
-            username: comment.user.username
+            username: comment.user.username,
+            avatar: comment.user.avatarUrl
         };
         // this.post = comment.post ? { id: comment.post.id } : null;
         this.content = comment.content;

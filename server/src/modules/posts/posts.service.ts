@@ -102,7 +102,7 @@ export class PostsService {
     async getPostDetails(id: number): Promise<PostResponseDto> {
         const post = await this.postRepository.findOne({
             where: { id: id },
-            relations: ['user', 'tags', 'images']
+            relations: ['user', 'tags', 'images', 'comments']
         });
         if (!post) {
             throw new NotFoundException(`Bài viết với ID: ${id} không tồn tại`);
