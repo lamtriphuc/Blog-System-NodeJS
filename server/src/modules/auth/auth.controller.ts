@@ -33,8 +33,10 @@ export class AuthController {
 
     @UseGuards(JwtAuthGuard)
     @Get('profile')
-    getProfile(@Request() req: any) {
-        return this.authService.getProfile(req.user);
+    async getProfile(@Request() req: any) {
+        const userId = req.user.id;
+        const user = await this.authService.getProfile(userId);
+        return new ResponseData(user, HttpStatus.OK, 'Lấy profile thành công')
     }
 
     @Post('refresh-token')

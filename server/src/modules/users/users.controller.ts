@@ -1,10 +1,12 @@
-import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Put, Req, Request, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Put, Req, Request, UploadedFile, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ResponseData } from 'src/global/globalClass';
 import { UserEntity } from 'src/entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { ResponseUserDto } from './dto/response-user.dto';
 
 @Controller('api/users')
 export class UsersController {
@@ -12,11 +14,9 @@ export class UsersController {
 
   @Get()
   async getAllUser(
-    @Req() req: Request & { user: string }
-  ): Promise<ResponseData<UserEntity[]>> {
-    console.log(req.user);
+  ): Promise<ResponseData<ResponseUserDto[]>> {
     const users = await this.usersService.getAllUser();
-    return new ResponseData<UserEntity[]>(users, HttpStatus.OK, 'Lấy tất cả user thành công')
+    return new ResponseData<ResponseUserDto[]>(users, HttpStatus.OK, 'Lấy tất cả user thành công')
   }
 
   @Post()
@@ -35,8 +35,19 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto
   ): Promise<ResponseData<UserEntity>> {
     const userId = req.user.id;
-    console.log(req.user)
     const updatedUser = await this.usersService.updateUser(userId, updateUserDto);
     return new ResponseData<UserEntity>(updatedUser, HttpStatus.CREATED, 'Cập nhật thành công');
+  }
+
+  @Patch('/update-avatar')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
+  async updateAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: any
+  ) {
+    const userId = req.user.id;
+    const avatarUrl = await this.usersService.updateAvatar(userId, file);
+    return new ResponseData(avatarUrl, HttpStatus.CREATED, 'Cập nhật ảnh thành công');
   }
 }

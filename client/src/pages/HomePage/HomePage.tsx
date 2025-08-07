@@ -6,6 +6,7 @@ import type { PostData } from "../../types";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { clearUser } from "../../store/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const fetchAllPosts = async () => {
   const { data } = await getAllPost();
@@ -18,6 +19,7 @@ const fetchSavedPosts = async () => {
 }
 
 const HomePage = () => {
+  const navigate = useNavigate();
 
   const { data: posts, isLoading, error } = useQuery<PostData[]>({
     queryKey: ['posts'],
@@ -40,7 +42,9 @@ const HomePage = () => {
           <PostComponent
             key={post.id}
             post={post}
-            isBookmark={savedPosts?.some((saved: any) => saved.id === post.id)} />
+            isBookmark={savedPosts?.some((saved: any) => saved.id === post.id)}
+            onClick={() => navigate(`/post-details/${post.id}`)}
+          />
         )
       })}
     </div>

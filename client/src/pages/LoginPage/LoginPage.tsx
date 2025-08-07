@@ -24,7 +24,7 @@ const LoginPage = () => {
       localStorage.setItem('accessToken', data.data.access_token);
       toast.success(data.message);
       try {
-        const profile = await queryClient.fetchQuery({
+        const { data: profile } = await queryClient.fetchQuery({
           queryKey: ['profile'],
           queryFn: getUserProfile,
         });

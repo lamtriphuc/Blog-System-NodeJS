@@ -1,0 +1,29 @@
+.post-title {
+    border-bottom: 1px solid #ccc;
+}
+
+.post-info {
+    font-size: 14px;
+}
+
+.post-answers {
+    flex: 1;
+}
+
+.post-answer {
+    border-bottom: 1px solid #ccc;
+    padding-left: 40px;
+}
+
+.post-related {
+    width: 300px;
+}
+
+.post-details-content {
+    border-bottom: 1px solid #ccc;
+}
+
+img {
+    max-width: 740px;
+    margin-bottom: 10px;
+}

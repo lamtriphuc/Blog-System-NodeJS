@@ -1,0 +1,34 @@
+.avatar-profile {
+    width: 200px;
+    height: 200px;
+    background-color: rgb(227, 231, 231);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.bi-person-fill {
+    font-size: 200px;
+    color: rgba(146, 146, 146, 0.993);
+}
+
+.image-profile {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.upload {
+    width: 200px;
+}
+
+.profile {
+    border-bottom: 1px solid #ffccf4;
+}
+
+.profile-right {
+    width: 500px;
+    height: 200px;
+}

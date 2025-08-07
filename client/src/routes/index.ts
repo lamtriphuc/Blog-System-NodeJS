@@ -3,6 +3,7 @@ import HomePage from "../pages/HomePage/HomePage";
 import LoginPage from "../pages/LoginPage/LoginPage";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import NotificationPage from "../pages/NotificationPage/NotificationPage";
+import PostDetailsPage from "../pages/PostDetailsPage/PostDetailsPage";
 import RegisterPage from "../pages/RegisterPage/RegisterPage";
 import TagPage from "../pages/TagPage/TagPage";
 import UserProfilePage from "../pages/UserProfilePage/UserProfilePage";
@@ -38,6 +39,12 @@ export const routes = [
     page: BookmarkPage,
     isShowHeader: true,
     isShowSidebarRight: true,
+  },
+  {
+    path: "/post-details/:id",
+    page: PostDetailsPage,
+    isShowHeader: true,
+    isShowSidebarRight: false,
   },
   {
     path: "/notification",

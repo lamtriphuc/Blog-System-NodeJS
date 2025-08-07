@@ -20,3 +20,24 @@ export const logoutUser = async () => {
     const response = await axiosInstance.post('/auth/logout');
     return response.data;
 };
+
+export const updateAvatar = async (file: File) => {
+    const formData = new FormData();
+    formData.append('avatar', file); // avatar = field name backend mong đợi
+
+    const response = await axiosInstance.patch('/users/update-avatar', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    return response.data;
+};
+
+
+export const upadateUser = async ({ username, bio }: { username: string, bio: string }) => {
+    const response = await axiosInstance.put('/users/me', { username, bio });
+    return response.data;
+};
+
+

@@ -5,45 +5,16 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CloudinaryService } from 'src/common/services/cloudinary.service';
+import { ResponseUserDto } from './dto/response-user.dto';
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>
+        private readonly userRepository: Repository<UserEntity>,
+        private readonly cloudinaryService: CloudinaryService
     ) { }
-
-    // async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    //     try {
-    //         const { username, email, password } = createUserDto;
-
-    //         const existingUser = await this.userRepository.findOne({
-    //             where: [{ username }, { email }] // username: username
-    //         })
-
-    //         if (existingUser) {
-    //             if (existingUser.email === email) {
-    //                 throw new ConflictException('Email đã tồn tại');
-    //             }
-    //             if (existingUser.username === username) {
-    //                 throw new ConflictException('Tên người dùng đã tồn tại');
-    //             }
-    //         }
-
-    //         const user = {
-    //             ...createUserDto,
-    //             passwordHash: password
-    //         }
-
-    //         const newUser = this.userRepository.create(user);
-    //         return this.userRepository.save(newUser);
-    //     } catch (error) {
-    //         if (error instanceof ConflictException) {
-    //             throw error;
-    //         }
-    //         throw new InternalServerErrorException('Tạo tài khoản thất bại');
-    //     }
-    // }
 
     async findByEmail(email: string): Promise<any> {
         const user = await this.userRepository.findOne({
@@ -104,10 +75,12 @@ export class UsersService {
         return this.userRepository.save(newUser);
     }
 
-    async getAllUser(): Promise<any[]> {
-        const users = await this.userRepository.find();
+    async getAllUser(): Promise<ResponseUserDto[]> {
+        const users = await this.userRepository.find({
+            relations: ['posts', 'comments']
+        });
 
-        const result = users.map(({ passwordHash, ...data }) => data);
+        const result = users.map(user => new ResponseUserDto(user));
         return result;
     }
 
@@ -131,5 +104,25 @@ export class UsersService {
             ...updateUser
         })
         return updatedUser;
+    }
+
+    async updateAvatar(userId: number, file: Express.Multer.File): Promise<string> {
+        const existingUser = await this.userRepository.findOne({
+            where: { id: userId }
+        })
+        if (!existingUser) throw new NotFoundException('Người dùng không tồn tại');
+        if (existingUser.avatarUrl) {
+            const publicId = await this.cloudinaryService.getPublicId(existingUser.avatarUrl);
+            if (publicId) {
+                await this.cloudinaryService.deleteImage(publicId);
+            }
+        }
+
+        const uploadImage = await this.cloudinaryService.uploadImage(file);
+        const avatarUrl = uploadImage.secure_url;
+
+        await this.userRepository.update(userId, { avatarUrl: avatarUrl })
+
+        return avatarUrl;
     }
 }

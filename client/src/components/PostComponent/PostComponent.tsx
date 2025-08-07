@@ -6,11 +6,12 @@ import dayjs from "../../utils/dayjs";
 type PostDetailsProps = {
   post: PostData;
   isBookmark: boolean;
+  onClick: () => void;
 }
 
-const PostComponent: React.FC<PostDetailsProps> = ({ post, isBookmark = false }) => {
+const PostComponent: React.FC<PostDetailsProps> = ({ post, isBookmark = false, onClick }) => {
   return (
-    <div className="post-container">
+    <div className="post-container" onClick={onClick}>
       <div className="post p-2 my-2">
         <div className="post-credit pb-2 d-flex align-items-center">
           <span className=" d-inline pe-2">

@@ -5,7 +5,7 @@ interface User {
     id: number;
     email: string;
     username: string;
-    avatar: string;
+    avatarUrl: string;
     bio: string;
     createdAt: Date;
     role: number;
