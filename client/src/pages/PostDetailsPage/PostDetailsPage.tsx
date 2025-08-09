@@ -85,6 +85,7 @@ const PostDetailsPage = () => {
             toast.success('Bình luận thành công');
             setNewCmt('');
             queryClient.invalidateQueries({ queryKey: ['comments', postId] }); // refetch comment list
+            queryClient.invalidateQueries({ queryKey: ['post-details'] });
         },
         onError: (error: any) => {
             console.error('Mutation lỗi:', error.message);
@@ -208,7 +209,7 @@ const PostDetailsPage = () => {
                         </div>
                         <div className='post-tags mt-3 d-flex gap-2'>
                             {postDetails?.tags?.map((tag: string, index: number) => {
-                                return <TagComponent key={index} tagName={tag} />
+                                return <TagComponent key={index} tagName={tag} isAllowDel={false} />
                             })}
                         </div>
                     </div>

@@ -1,4 +1,5 @@
 import dayjs = require('dayjs')
+import { filter } from 'rxjs';
 import { TagEntity } from "src/entities/tag.entity";
 
 export class TagResponseDto {
@@ -8,6 +9,7 @@ export class TagResponseDto {
     posts: number[];
     totalPost: number;
     postToday: number;
+    postThisMonth: number;
 
     constructor(tag: TagEntity) {
         this.id = tag.id
@@ -20,5 +22,10 @@ export class TagResponseDto {
         this.postToday = tag.posts
             ?.filter(post => dayjs(post.createdAt).isAfter(today))
             ?.length;
+
+        const startOfMonth = dayjs().startOf('month');
+        this.postThisMonth = tag.posts
+            ?.filter(post => dayjs(post.createdAt).isAfter(startOfMonth))
+            ?.length || 0;
     }
 }

@@ -26,8 +26,8 @@ export class TagController {
     @Get()
     async getAllTag(
     ): Promise<any> {
-        const tags = this.tagService.getAllTag();
-        return tags;
+        const tags = await this.tagService.getAllTag();
+        return new ResponseData(tags, HttpStatus.OK, 'Lấy tags thành công');
     }
 
     @Get('tag-trending')

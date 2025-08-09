@@ -3,20 +3,29 @@ import TagDetailsComponent from "../../components/TagDetailsComponent/TagDetails
 import "./TagPage.css";
 import { getAllTag } from "../../api/tagApi";
 import type { TagData } from "../../types";
+import { toast } from "react-toastify";
 
 
 
 const TagPage = () => {
+  // FETCH
   const fetchAllTags = async () => {
-    const data = await getAllTag(); // data chính là mảng ở trên
-    console.log(data)
-    return data;
-  };
+    try {
+      const response = await getAllTag();
+      return response.data;
+    } catch (error: any) {
+      const message = error?.response?.data?.message;
+      console.log('Lỗi: ', message);
+      toast.error('Lỗi: ', message);
+      return [];
+    }
+  }
 
+  // QUERY 
   const { data: tags } = useQuery({
     queryKey: ['tags'],
     queryFn: fetchAllTags,
-  });
+  })
 
   return (
     <div className="d-flex flex-column align-items-start gap-4 w-100">

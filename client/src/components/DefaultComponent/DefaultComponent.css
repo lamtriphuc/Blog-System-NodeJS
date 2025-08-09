@@ -1,6 +1,7 @@
 .content {
   top: 60px;
   overflow: hidden;
+  align-items: flex-start;
 }
 
 .fixed-sidebar {

@@ -8,3 +8,11 @@
 .tag:hover {
     background-color: #dbdbdb;
 }
+
+.bi-x {
+    font-size: 12px;
+}
+
+.bi-x:hover {
+    cursor: pointer;
+}

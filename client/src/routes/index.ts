@@ -1,4 +1,5 @@
 import BookmarkPage from "../pages/BookmarkPage/BookmarkPage";
+import CreatePostPage from "../pages/CreatePostPage/CreatePostPage";
 import HomePage from "../pages/HomePage/HomePage";
 import LoginPage from "../pages/LoginPage/LoginPage";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
@@ -50,6 +51,12 @@ export const routes = [
     path: "/notification",
     page: NotificationPage,
     isShowHeader: true,
+  },
+  {
+    path: "/create-post",
+    page: CreatePostPage,
+    isShowHeader: true,
+    isShowSidebarRight: true,
   },
   {
     path: "*",

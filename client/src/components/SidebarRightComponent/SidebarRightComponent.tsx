@@ -3,10 +3,15 @@ import { getTagTrending } from "../../api/tagApi";
 import TagComponent from "../TagComponent/TagComponent";
 import "./SidebarRightComponent.css";
 import type { TagData } from "../../types";
+import { data } from "react-router-dom";
 
 const fetchTagTrending = async () => {
-  const { data } = await getTagTrending();
-  return data;
+  try {
+    const response = await getTagTrending();
+    return response.data;
+  } catch (error: any) {
+    console.log(error);
+  }
 }
 
 const SidebarRightComponent = () => {
@@ -19,7 +24,7 @@ const SidebarRightComponent = () => {
     <div className="sidebar-right p-2">
       <h6 className="pt-3">Thẻ thịnh hành</h6>
       {tagTrending?.map((tag: TagData, index: number) => {
-        return <TagComponent key={index} tagName={tag.name} />
+        return <TagComponent key={index} tagName={tag.name} isAllowDel={false} />
       })}
     </div>
   );

@@ -35,7 +35,9 @@ const HeaderComponent = () => {
           <input className="form-control" type="text" placeholder="Tìm kiếm" />
         </div>
         <div className="right-block d-flex gap-4 align-items-center">
-          <div className="create-post d-flex gap-1 align-items-center item px-2">
+          <div className="create-post d-flex gap-1 align-items-center item px-2"
+            onClick={() => navigate('/create-post')}
+          >
             <i className="bi bi-plus-lg"></i>
             <span>Tạo bài đăng</span>
           </div>

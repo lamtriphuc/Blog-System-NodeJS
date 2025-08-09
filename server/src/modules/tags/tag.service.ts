@@ -32,17 +32,17 @@ export class TagsService {
     }
 
     async getTrendingTags(): Promise<TagResponseDto[]> {
-        const today = dayjs().startOf('day').toDate();
+        const startOfMonth = dayjs().startOf('month').toDate();
 
         const tags = await this.tagRepository
             .createQueryBuilder('tag')
             .leftJoinAndSelect('tag.posts', 'post')
-            .where('post.createdAt >= :today', { today })
+            .where('post.createdAt >= :startOfMonth', { startOfMonth })
             .getMany();
 
         const res = tags
             .map(tag => new TagResponseDto(tag))
-            .sort((a, b) => b.postToday - a.postToday);
+            .sort((a, b) => b.postThisMonth - a.postThisMonth);
 
         return res;
     }
