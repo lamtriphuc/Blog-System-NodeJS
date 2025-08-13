@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from 'src/entities/post.entity';
 import { Repository } from 'typeorm';
@@ -102,7 +102,7 @@ export class PostsService {
     async getPostDetails(id: number): Promise<PostResponseDto> {
         const post = await this.postRepository.findOne({
             where: { id: id },
-            relations: ['user', 'tags', 'images', 'comments']
+            relations: ['user', 'tags', 'images', 'votes', 'comments']
         });
         if (!post) {
             throw new NotFoundException(`Bài viết với ID: ${id} không tồn tại`);
@@ -120,50 +120,78 @@ export class PostsService {
     }
 
     // UPDATE
-    async updatePost(id: number, updatePostDto: UpdatePostDto): Promise<PostResponseDto> {
+    async updatePost(
+        userId: number,
+        postId: number,
+        updatePostDto: UpdatePostDto,
+        files: Express.Multer.File[]
+    ): Promise<PostResponseDto> {
         const existingPost = await this.postRepository.findOne({
-            where: { id },
+            where: { id: postId },
             relations: ['user', 'tags', 'images'],
         });
+
         if (!existingPost) {
-            throw new NotFoundException(`Bài viết với ID: ${id} không tồn tại`);
+            throw new NotFoundException(`Bài viết với ID: ${postId} không tồn tại`);
+        }
+        if (existingPost.user.id !== userId) {
+            throw new ForbiddenException('Bạn không có quyền sửa bài viết này');
         }
 
+        // Update title, content
         if (updatePostDto.title) existingPost.title = updatePostDto.title;
         if (updatePostDto.content) existingPost.content = updatePostDto.content;
 
+        // Update tags
         if (updatePostDto.tagIds) {
             const tags = await this.tagRepository.findByIds(updatePostDto.tagIds);
             existingPost.tags = tags;
         }
 
-        if (updatePostDto.imageUrls) {
-            // xóa ảnh ũ
-            await this.postImageRepository.delete({ post: { id: existingPost.id } });
+        // Nếu có ảnh mới
+        if (files && files.length > 0) {
+            // Xóa ảnh cũ khỏi Cloudinary
+            for (const img of existingPost.images) {
+                const publicId = this.cloudinaryService.getPublicId(img.imageUrl);
+                if (publicId) await this.cloudinaryService.deleteImage(publicId);
+            }
 
-            // Them ảnh mới
-            const newImages = updatePostDto.imageUrls.map(url => {
-                return this.postImageRepository.create({ imageUrl: url, post: existingPost });
-            })
-            const savedImages = await this.postImageRepository.save(newImages);
+            // Xóa ảnh cũ khỏi DB
+            if (existingPost.images.length > 0) {
+                await this.postImageRepository.remove(existingPost.images);
+            }
 
-            existingPost.images = savedImages;
+            // Upload ảnh mới
+            const newImageUrls: string[] = [];
+            for (const file of files) {
+                const result = await this.cloudinaryService.uploadImage(file);
+                newImageUrls.push(result.secure_url);
+            }
+
+            // Tạo PostImage entity
+            const postImages = newImageUrls.map(url =>
+                this.postImageRepository.create({ imageUrl: url, post: existingPost })
+            );
+
+            // Lưu ảnh mới vào DB
+            await this.postImageRepository.save(postImages);
+
+            // Gán lại để trả về kết quả
+            existingPost.images = postImages;
         }
 
+        // Lưu post + ảnh
         const updatedPost = await this.postRepository.save(existingPost);
 
+        // Lấy lại dữ liệu đầy đủ
         const result = await this.postRepository.findOne({
             where: { id: updatedPost.id },
             relations: ['user', 'tags', 'images'],
         });
 
-        if (!result) {
-            throw new NotFoundException();
-        }
-
-        const res = new PostResponseDto(result);
-        return res;
+        return new PostResponseDto(result!);
     }
+
 
     async deletePost(id: number): Promise<void> {
         const existingPost = await this.postRepository.findOneBy({ id });

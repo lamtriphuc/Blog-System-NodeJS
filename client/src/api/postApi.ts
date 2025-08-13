@@ -1,4 +1,3 @@
-import axios from "axios";
 import axiosInstance from "./axios";
 
 export const getAllPost = async () => {
@@ -21,7 +20,22 @@ export const getPostDetails = async ({ id }: { id: number }) => {
     return response.data;
 }
 
-export const updatePost = async (id: number, data: { title: string; content: string }) => {
-    const response = await axiosInstance.patch(`/posts/${id}`, data);
+export const updatePost = async (id: number, formData: FormData) => {
+    const response = await axiosInstance.put(`/posts/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+    });
     return response.data;
 }
+
+export const createPost = async (formData: FormData) => {
+    const response = await axiosInstance.post("/posts", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+    });
+    return response.data;
+};
+
+export const savePost = async (postId: number) => {
+    const response = await axiosInstance.post(`/saved-posts/${postId}`);
+    return response.data;
+};
+

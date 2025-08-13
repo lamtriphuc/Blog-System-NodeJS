@@ -8,7 +8,7 @@ export class PostResponseDto {
     content: string;
     createdAt: Date;
     updatedAt: Date;
-    tags: string[];
+    tags: TagEntity[];
     images: string[];
     user: {
         id: number;
@@ -25,7 +25,7 @@ export class PostResponseDto {
         this.createdAt = post.createdAt;
         this.updatedAt = post.updatedAt;
         this.images = post.images?.map(img => img.imageUrl) || [];
-        this.tags = post.tags?.map(tag => tag.name) || [];
+        this.tags = post.tags || [];
         this.user = {
             id: post.user.id,
             username: post.user.username,

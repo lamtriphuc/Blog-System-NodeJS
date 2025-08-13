@@ -1,20 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TagComponent from '../../components/TagComponent/TagComponent';
-import './CreatePostPage.css'
+import './UpdatePostPage.css'
 import { getAllTag } from '../../api/tagApi';
 import { toast } from 'react-toastify';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createPost } from '../../api/postApi';
+import { createPost, getPostDetails, updatePost } from '../../api/postApi';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../store/uiSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const CreatePostPage = () => {
+const UpdatePostPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { id } = useParams();
+    const postId = Number(id);
 
     const [files, setFiles] = useState<File[]>([]);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+    const [oldPreviewUrls, setOldPreviewUrls] = useState<string[]>([]);
     const [selectedTags, setSelectedTags] = useState<any[]>([]);
     const [query, setQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
@@ -33,15 +36,27 @@ const CreatePostPage = () => {
             return [];
         }
     }
-    const createNewPost = async (formData: FormData) => {
+
+    const fetchPostDetails = async () => {
+        try {
+            const response = await getPostDetails({ id: postId });
+            return response.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message;
+            console.log('Lỗi: ', message);
+            toast.error('Lỗi: ', message);
+        }
+    }
+
+    const updatePostDetails = async (formData: FormData) => {
         try {
             dispatch(setLoading(true));
-            const response = await createPost(formData);
+            const response = await updatePost(postId, formData);
             //  { data, statusCode, message }
             return response.data;
         } catch (error: any) {
             const message = error?.response?.data?.message || 'Có lỗi xảy ra';
-            console.error('Lỗi khi tạo comment:', message);
+            console.error('Lỗi khi sửa bài viết:', message);
             toast.error(message);
             throw new Error(message); // phải throw để mutation biết là lỗi
         } finally {
@@ -54,13 +69,27 @@ const CreatePostPage = () => {
         queryKey: ['all-tags'],
         queryFn: fetchAllTags,
     })
+    const { data: postDetails } = useQuery({
+        queryKey: ['post-details'],
+        queryFn: fetchPostDetails,
+        enabled: !!postId && !isNaN(postId),
+    })
+
+    useEffect(() => {
+        setTitlePost(postDetails?.title);
+        setContentPost(postDetails?.content);
+        setSelectedTags(postDetails?.tags);
+        if (postDetails?.images) {
+            setOldPreviewUrls(postDetails.images);
+        }
+    }, [postDetails])
 
     const mutation = useMutation({
         mutationKey: ['create-post'],
-        mutationFn: createNewPost,
+        mutationFn: updatePostDetails,
         onSuccess: () => {
-            toast.success('Tạo bài viết thành công');
-            navigate('/');
+            toast.success('Chỉnh sửa bài viết thành công');
+            navigate('/')
         },
         onError: (error: any) => {
             console.error('Mutation lỗi:', error.message);
@@ -119,20 +148,26 @@ const CreatePostPage = () => {
         setSelectedTags(prev => prev.filter(tag => tag.id !== tagId));
     };
 
-    const handleCreatePost = () => {
+    const handleUpdatePost = () => {
         const formData = new FormData();
         formData.append('title', titlePost);
         formData.append('content', contentPost)
         formData.append('tagIds', JSON.stringify(selectedTags.map(tag => tag.id)))
-        files.forEach(file => {
-            formData.append('images', file);
-        })
+        // Nếu không có ảnh mới → gửi danh sách ảnh cũ
+        if (!files) {
+            console.log(postDetails.images)
+            formData.append('imageUrls', JSON.stringify(postDetails.images));
+        } else {
+            files.forEach(file => {
+                formData.append('images', file);
+            })
+        }
         mutation.mutate(formData);
     }
 
     return (
         <div>
-            <h5 className='text-center'>Tạo bài viết của bạn</h5>
+            <h5 className='text-center'>Chỉnh sửa bài viết của bạn</h5>
             <div className='create-post-title mb-4'>
                 <label>Tiêu đề</label>
                 <p className='mini-title my-1'>Hãy đặt câu hỏi của bạn (ít nhất 10 ký tự)</p>
@@ -155,17 +190,28 @@ const CreatePostPage = () => {
                 ></textarea>
             </div>
             <div className='create-post-image mb-4'>
-                <label>Ảnh minh họa (nếu có)</label>
+                <label>Ảnh minh họa</label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "10px" }}>
+                    {oldPreviewUrls.map((_, index) => (
+                        <div key={index} style={{ textAlign: "center" }}>
+                            {oldPreviewUrls[index] ? (
+                                <img
+                                    src={oldPreviewUrls[index]}
+                                    alt={`Ảnh ${index}`}
+                                    style={{ width: "100px", height: "100px", display: "block", objectFit: 'cover' }}
+                                />
+                            ) : (
+                                <div style={{ padding: "10px", border: "1px solid #ccc" }}>
+                                    Ảnh {index}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div className='create-post-image mb-4'>
+                <label>Ảnh minh họa (mới nếu cần)</label>
                 <input className="form-control form-control-sm" onChange={handleFileChange} type="file" multiple></input>
-                {/* {previewUrl && (
-                    <div style={{ marginTop: "10px" }}>
-                        <img
-                            src={previewUrl}
-                            alt="Preview"
-                            style={{ maxWidth: "100px", maxHeight: "100px" }}
-                        />
-                    </div>
-                )} */}
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "10px" }}>
                     {files.map((file, index) => (
                         <div key={index} style={{ textAlign: "center" }}>
@@ -237,10 +283,10 @@ const CreatePostPage = () => {
             </div>
             <button
                 className="btn btn-primary w-100 mt-4"
-                onClick={handleCreatePost}
+                onClick={handleUpdatePost}
             >Tạo bài viết</button>
         </div>
     )
 }
 
-export default CreatePostPage;
+export default UpdatePostPage

@@ -14,7 +14,6 @@ export class CreatePostDto {
     @Transform(({ value }) => {
         try {
             // Nếu là chuỗi thì parse
-            console.log(typeof value)
             return typeof value === 'string' ? JSON.parse(value) : value;
         } catch {
             return [];

@@ -19,6 +19,30 @@
     width: 300px;
 }
 
+.post-details-interact {
+    width: 100px;
+}
+
+.vote-item-details {
+    width: 40px;
+    height: 40px;
+}
+
+.bookmark-details {
+    width: 40px;
+    height: 40px;
+}
+
+.bookmark-details:hover {
+    background-color: #dbe4e9;
+    border-radius: 20px;
+}
+
+.vote-item-details:hover {
+    background-color: #dbe4e9;
+    border-radius: 20px;
+}
+
 .post-details-content {
     border-bottom: 1px solid #ccc;
 }

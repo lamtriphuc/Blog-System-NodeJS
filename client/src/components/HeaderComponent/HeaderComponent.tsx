@@ -47,7 +47,7 @@ const HeaderComponent = () => {
           {!user ? (
             <div
               className="login item d-flex align-items-center px-2"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate('/login')}
             >
               <span>Đăng nhập</span>
             </div>

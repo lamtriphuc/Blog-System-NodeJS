@@ -6,6 +6,7 @@ import { VoteEntity } from 'src/entities/vote.entity';
 import { Repository } from 'typeorm';
 import { PostEntity } from 'src/entities/post.entity';
 import { UserEntity } from 'src/entities/user.entity';
+import { ResponseVoteDto } from './dto/response-vote.dto';
 
 @Injectable()
 export class VoteService {
@@ -53,5 +54,18 @@ export class VoteService {
     const newVote = this.voteRepository.create({ user, post, voteType })
     await this.voteRepository.save(newVote);
     return 'Vote thành công';
+  }
+
+  async getVoteByUser(userId: number): Promise<ResponseVoteDto[]> {
+    const votes = await this.voteRepository.find({
+      where: { user: { id: userId } },
+      select: {
+        post: { id: true },
+        voteType: true
+      },
+      relations: ['post']
+    })
+
+    return votes.map(vote => new ResponseVoteDto(vote));
   }
 }

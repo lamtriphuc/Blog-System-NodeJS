@@ -44,7 +44,6 @@ const UserProfilePage = () => {
   const mutation = useMutation({
     mutationFn: upadateUser,
     onSuccess: async data => {
-      console.log(data)
       toast.success(data.message);
       // Gọi lại profile mới
       await queryClient.invalidateQueries({ queryKey: ['profile'] }); // hoặc refetchQueries

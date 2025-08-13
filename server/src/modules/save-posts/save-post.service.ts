@@ -18,7 +18,8 @@ export class SavePostService {
     async savePost(userId: number, postId: number): Promise<any> {
         const exists = await this.savePostRepository.findOneBy({ userId, postId });
         if (exists) {
-            throw new ConflictException('Bạn đã lưu bài viết này rồi');
+            await this.savePostRepository.delete({ userId, postId });
+            return 'Đã bỏ lưu bài viết';
         }
 
         const post = await this.postRepository.findOneBy({ id: postId });

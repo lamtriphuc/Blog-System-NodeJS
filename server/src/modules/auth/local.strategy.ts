@@ -2,10 +2,13 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
 import AuthService from "./auth.service";
+import { ResponseUser } from "./dto/response-user.dto";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-    constructor(private authService: AuthService) {
+    constructor(
+        private authService: AuthService
+    ) {
         super({ usernameField: 'email' });
     }
 
@@ -14,6 +17,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         if (!user) {
             throw new UnauthorizedException('Email hoặc mật khẩu không đúng!');
         }
-        return user;
+        return new ResponseUser(user);
     }
 }

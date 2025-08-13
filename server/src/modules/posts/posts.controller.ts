@@ -51,12 +51,16 @@ export class PostsController {
 
 
   @UseGuards(JwtAuthGuard)
-  @Patch('/:id')
+  @Put('/:id')
+  @UseInterceptors(FilesInterceptor('images'))
   async updatePost(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updatePostDto: UpdatePostDto
+    @Param('id', ParseIntPipe) postId: number,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body() updatePostDto: UpdatePostDto,
+    @Request() req: any
   ): Promise<ResponseData<PostResponseDto>> {
-    const post = await this.postsService.updatePost(id, updatePostDto);
+    const userId = req.user.id
+    const post = await this.postsService.updatePost(userId, postId, updatePostDto, files);
     return new ResponseData(post, HttpStatus.OK, 'Cập nhật bài viết thành công');
   }
 

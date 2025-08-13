@@ -1,4 +1,5 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdatePostDto {
     @IsNotEmpty({ message: 'Tiêu đề không được bỏ trống' })
@@ -9,8 +10,16 @@ export class UpdatePostDto {
     @IsString()
     content: string;
 
-    @IsOptional()
     @IsArray()
+    @Transform(({ value }) => {
+        try {
+            // Nếu là chuỗi thì parse
+            return typeof value === 'string' ? JSON.parse(value) : value;
+        } catch {
+            return [];
+        }
+    })
+    @IsNumber({}, { each: true })
     tagIds: number[];
 
     @IsOptional()

@@ -25,8 +25,8 @@ export default class AuthService {
     }
 
     async login(loginData: any) {
-        const { email, id } = loginData;
-        const payload = { email, sub: id };
+        const { email, id, role } = loginData;
+        const payload = { email, sub: id, role };
 
         const accessToken = this.jwtService.sign(payload, { expiresIn: '1d' });
         const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });

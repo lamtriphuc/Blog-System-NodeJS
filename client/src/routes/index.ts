@@ -7,6 +7,7 @@ import NotificationPage from "../pages/NotificationPage/NotificationPage";
 import PostDetailsPage from "../pages/PostDetailsPage/PostDetailsPage";
 import RegisterPage from "../pages/RegisterPage/RegisterPage";
 import TagPage from "../pages/TagPage/TagPage";
+import UpdatePostPage from "../pages/UpdatePostPage/UpdatePostPage";
 import UserProfilePage from "../pages/UserProfilePage/UserProfilePage";
 
 export const routes = [
@@ -55,6 +56,12 @@ export const routes = [
   {
     path: "/create-post",
     page: CreatePostPage,
+    isShowHeader: true,
+    isShowSidebarRight: true,
+  },
+  {
+    path: "/update-post/:id",
+    page: UpdatePostPage,
     isShowHeader: true,
     isShowSidebarRight: true,
   },

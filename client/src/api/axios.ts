@@ -23,7 +23,14 @@ axiosInstance.interceptors.response.use(
             originalRequest.url.includes('/auth/login') ||
             originalRequest.url.includes('/auth/refresh-token');
 
+        // Nếu không có access token hoặc không có refresh token → không gọi refresh
+        const token = localStorage.getItem('accessToken');
         if (error.response?.status === 401 && !originalRequest._retry && !isLoginOrRefresh) {
+            if (!token) {
+                // Trạng thái đăng xuất → trả lỗi luôn
+                return Promise.reject(error);
+            }
+
             originalRequest._retry = true;
             try {
                 const res = await axiosInstance.post('/auth/refresh-token');
@@ -32,13 +39,13 @@ axiosInstance.interceptors.response.use(
                 originalRequest.headers.Authorization = `Bearer ${newToken}`;
                 return axiosInstance(originalRequest);
             } catch (err) {
-                window.location.href = '/login';
                 return Promise.reject(err);
             }
         }
         return Promise.reject(error);
     }
 );
+
 
 
 export default axiosInstance;
