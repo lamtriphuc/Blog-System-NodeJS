@@ -9,6 +9,7 @@ import { VoteEntity } from './vote.entity';
 import { PostImageEntity } from './post-image.entity';
 import { TagEntity } from './tag.entity';
 import { SavedPostEntity } from './saved-post.entity';
+import { ReportEntity } from './report.entity';
 
 @Entity('posts')
 export class PostEntity {
@@ -50,4 +51,7 @@ export class PostEntity {
 
     @OneToMany(() => SavedPostEntity, saved => saved.post)
     savedBy: SavedPostEntity[];
+
+    @OneToMany(() => ReportEntity, report => report.post)
+    reports: ReportEntity[];
 }

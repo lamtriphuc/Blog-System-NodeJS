@@ -12,6 +12,7 @@ import PostComponent from '../../components/PostComponent/PostComponent'
 import { getPostByUser, getSavedPost } from '../../api/postApi'
 import type { PostData } from '../../types'
 import { useNavigate } from 'react-router-dom'
+import { getVoteByUser } from '../../api/voteApi'
 
 const fetchPostsByUser = async () => {
   const { data } = await getPostByUser();
@@ -36,10 +37,22 @@ const UserProfilePage = () => {
     queryKey: ['user-posts'],
     queryFn: fetchPostsByUser
   })
+  console.log(userPosts)
   const { data: savedPosts } = useQuery({
     queryKey: ['saved-post'],
     queryFn: fetchSavedPosts
   })
+  const fetchVote = async () => {
+    try {
+      const response = await getVoteByUser();
+      return response.data;
+    } catch (error: any) {
+      const message = error?.response?.data?.message;
+      console.log('Lỗi: ', message);
+      toast.error('Lỗi: ', message);
+      return [];
+    }
+  }
 
   const mutation = useMutation({
     mutationFn: upadateUser,
@@ -104,6 +117,18 @@ const UserProfilePage = () => {
     }
   }
 
+  const { data: userVotes } = useQuery({
+    queryKey: ['vote'],
+    queryFn: fetchVote,
+    enabled: !!user
+  })
+
+  const getVoteType = (postId: number) => {
+    if (!userVotes || userVotes.length === 0) return 0;
+    const vote = userVotes.find((v: any) => v.postId === postId)
+    return vote ? vote.voteType : 0;
+  }
+
   return (
     <div>
       <h3 className='text-center'>Thông tin cá nhân</h3>
@@ -148,11 +173,12 @@ const UserProfilePage = () => {
       </div>
       <div className='user-posts mt-5'>
         <h4 className='my-4 text-center'>Bài viết của bạn</h4>
-        {userPosts?.map((post: PostData) => {
+        {userPosts?.map((post: any) => {
           return (
             <PostComponent
               key={post.id}
               post={post}
+              voteType={getVoteType(post.id)}
               isBookmark={savedPosts?.some((saved: any) => saved.id === post.id)}
               onClick={() => navigate(`/post-details/${post.id}`)}
             />

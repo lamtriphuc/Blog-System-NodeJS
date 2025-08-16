@@ -1,3 +1,4 @@
+import AdminPage from "../pages/AdminPage/AdminPage";
 import BookmarkPage from "../pages/BookmarkPage/BookmarkPage";
 import CreatePostPage from "../pages/CreatePostPage/CreatePostPage";
 import HomePage from "../pages/HomePage/HomePage";
@@ -64,6 +65,11 @@ export const routes = [
     page: UpdatePostPage,
     isShowHeader: true,
     isShowSidebarRight: true,
+  },
+  {
+    path: "/admin",
+    page: AdminPage,
+    isAdmin: true,
   },
   {
     path: "*",

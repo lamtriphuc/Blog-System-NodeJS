@@ -3,6 +3,7 @@ import { PostEntity } from './post.entity';
 import { CommentEntity } from './comment.entity';
 import { VoteEntity } from './vote.entity';
 import { SavedPostEntity } from './saved-post.entity';
+import { ReportEntity } from './report.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -44,4 +45,13 @@ export class UserEntity {
 
     @OneToMany(() => SavedPostEntity, saved => saved.user)
     savedPosts: SavedPostEntity[];
+
+    @OneToMany(() => ReportEntity, report => report.user)
+    reports: ReportEntity[];
+
+    @Column({ name: 'is_banned', default: false })
+    isBanned: boolean;
+
+    @Column({ name: 'banned_until', type: 'timestamp', nullable: true })
+    bannedUntil: Date | null;
 }

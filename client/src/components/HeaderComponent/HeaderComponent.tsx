@@ -64,6 +64,7 @@ const HeaderComponent = () => {
               </div>
               <ul className="dropdown-menu" aria-labelledby="userDropdown">
                 <li><a className="dropdown-item" href="/profile">Hồ sơ</a></li>
+                {user.role == 1 && (<li><a className="dropdown-item" href="/admin">Quản trị</a></li>)}
                 <li><a className="dropdown-item" href="#" onClick={handleLogout}>Đăng xuất</a></li>
               </ul>
             </div>

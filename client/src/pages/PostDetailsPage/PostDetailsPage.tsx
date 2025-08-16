@@ -202,7 +202,7 @@ const PostDetailsPage = () => {
 
     useEffect(() => {
         if (savedPosts && savedPosts.length > 0) {
-            const post = savedPosts.find((p: any) => p.id === postDetails.id);
+            const post = savedPosts.find((p: any) => p?.id === postDetails.id);
             if (post) {
                 setIsBookmark(true);
             } else {
@@ -211,17 +211,20 @@ const PostDetailsPage = () => {
         }
     }, [savedPosts])
 
+
     return (
         <div>
             <div className="post-title">
                 <div className='d-flex justify-content-between'>
                     <h4>{postDetails?.title}</h4>
-                    <button
-                        onClick={() => nagigate(`/update-post/${postDetails.id}`)}
-                        className="btn btn-primary"
-                        style={{ cursor: 'pointer' }}
-                    // data-bs-toggle="modal" data-bs-target="#updatePostModal"
-                    ><span>Sửa bài viết  </span><i className="bi bi-pencil-square"></i></button>
+                    {postDetails?.user?.id === user?.id && (
+                        <button
+                            onClick={() => nagigate(`/update-post/${postDetails.id}`)}
+                            className="btn btn-primary"
+                            style={{ cursor: 'pointer' }}
+                        // data-bs-toggle="modal" data-bs-target="#updatePostModal"
+                        ><span>Sửa bài viết  </span><i className="bi bi-pencil-square"></i></button>
+                    )}
                 </div>
                 <div className='post-info d-flex gap-3 my-3'>
                     <span className="" style={{ height: '30px' }}>

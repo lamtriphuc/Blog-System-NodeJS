@@ -113,7 +113,7 @@ export class PostsService {
     async getPostsByUserId(userId: number): Promise<PostResponseDto[]> {
         const posts = await this.postRepository.find({
             where: { user: { id: userId } },
-            relations: ['user', 'tags', 'images'],
+            relations: ['user', 'tags', 'images', 'votes'],
             order: { createdAt: 'DESC' }
         })
         return posts.map(post => new PostResponseDto(post));

@@ -7,11 +7,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ResponseUserDto } from './dto/response-user.dto';
+import { AdminGuard } from '../auth/guards/admin.guard';
 
 @Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Get()
   async getAllUser(
   ): Promise<ResponseData<ResponseUserDto[]>> {
@@ -49,5 +51,22 @@ export class UsersController {
     const userId = req.user.id;
     const avatarUrl = await this.usersService.updateAvatar(userId, file);
     return new ResponseData(avatarUrl, HttpStatus.CREATED, 'Cập nhật ảnh thành công');
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Patch(':id/ban')
+  async banUser(
+    @Param('id') id: number,
+    @Body('hours') hours?: number
+  ) {
+    const user = await this.usersService.banUser(id, hours);
+    return new ResponseData(user, HttpStatus.OK, `Ban ${user.username} thành công`);
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Patch(':id/unban')
+  async unbanUser(@Param('id') id: number) {
+    const user = await this.usersService.unbanUser(id);
+    return new ResponseData(user, HttpStatus.OK, `Gỡ ban ${user.username} thành công`);
   }
 }

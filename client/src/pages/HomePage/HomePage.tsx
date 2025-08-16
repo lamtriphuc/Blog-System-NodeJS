@@ -59,7 +59,7 @@ const HomePage = () => {
   })
 
 
-  const { data: posts, isLoading, error } = useQuery<PostData[]>({
+  const { data: posts } = useQuery<PostData[]>({
     queryKey: ['posts'],
     queryFn: fetchAllPosts
   })
@@ -75,9 +75,6 @@ const HomePage = () => {
     const vote = userVotes.find((v: any) => v.postId === postId)
     return vote ? vote.voteType : 0;
   }
-
-  if (isLoading) return < p > Loading...</p >;
-  if (error) return <p>Error: {(error as Error).message}</p>;
 
   return (
     <div>

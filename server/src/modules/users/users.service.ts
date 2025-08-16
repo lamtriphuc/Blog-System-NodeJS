@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -124,5 +124,39 @@ export class UsersService {
         await this.userRepository.update(userId, { avatarUrl: avatarUrl })
 
         return avatarUrl;
+    }
+
+
+    async banUser(id: number, hours?: number): Promise<ResponseUserDto> {
+        const user = await this.userRepository.findOne({
+            where: { id },
+            relations: ['posts', 'comments'],
+        });
+        if (!user) throw new NotFoundException(`User với id ${id} không tồn tại`);
+        if (user.isBanned) throw new BadRequestException(`User đã bị ban`);
+
+        user.isBanned = true;
+        user.bannedUntil = hours
+            ? new Date(Date.now() + hours * 60 * 60 * 1000)
+            : null;
+
+        await this.userRepository.save(user);
+
+        return new ResponseUserDto(user); // Trả về DTO
+    }
+
+    async unbanUser(id: number): Promise<ResponseUserDto> {
+        const user = await this.userRepository.findOne({
+            where: { id },
+            relations: ['posts', 'comments'],
+        });
+        if (!user) throw new NotFoundException(`User với id ${id} không tồn tại`);
+        if (!user.isBanned) throw new BadRequestException(`User chưa bị ban`);
+
+        user.isBanned = false;
+        user.bannedUntil = null;
+        await this.userRepository.save(user);
+
+        return new ResponseUserDto(user); // Trả về DTO
     }
 }

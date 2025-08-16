@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { setUser } from "./store/authSlice";
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
 
 function App() {
   const dispatch = useDispatch();
@@ -29,14 +30,21 @@ function App() {
               ? DefaultComponent
               : (route.isShowHeader) ? DefaultComponentNotSideBar
                 : Fragment
+            const element = (
+              <Layout>
+                <Page />
+              </Layout>
+            );
             return (
               <Route
                 key={index}
                 path={route.path}
                 element={
-                  <Layout>
-                    <Page />
-                  </Layout>
+                  route.isAdmin ? (
+                    <RoleProtectedRoute requiredRole={1}>
+                      {element}
+                    </RoleProtectedRoute>
+                  ) : element
                 }
               ></Route>
             );

@@ -20,6 +20,8 @@ import { TagModule } from './modules/tags/tag.module';
 import { SavePostModule } from './modules/save-posts/save-post.module';
 import { VoteModule } from './modules/vote/vote.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { ReportEntity } from './entities/report.entity';
+import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -31,7 +33,7 @@ import { CommentModule } from './modules/comment/comment.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [UserEntity, PostEntity, CommentEntity, VoteEntity, SavedPostEntity, PostImageEntity, TagEntity],
+      entities: [UserEntity, PostEntity, CommentEntity, VoteEntity, SavedPostEntity, PostImageEntity, TagEntity, ReportEntity],
       synchronize: true,
     }),
     PostsModule,
@@ -40,7 +42,8 @@ import { CommentModule } from './modules/comment/comment.module';
     TagModule,
     SavePostModule,
     VoteModule,
-    CommentModule
+    CommentModule,
+    ReportModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseService],

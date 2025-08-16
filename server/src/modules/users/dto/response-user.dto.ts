@@ -8,6 +8,8 @@ export class ResponseUserDto {
     avatarUrl: string;
     role: number;
     createdAt: Date;
+    isBanned: boolean;
+    bannedUntil: Date | null;
     countPost: number;
     countComment: number;
 
@@ -21,5 +23,7 @@ export class ResponseUserDto {
         this.createdAt = user.createdAt;
         this.countPost = user.posts.length || 0;
         this.countComment = user.comments.length || 0;
+        this.bannedUntil = user.bannedUntil;
+        this.isBanned = user.isBanned;
     }
 }
