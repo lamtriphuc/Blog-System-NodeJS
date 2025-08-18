@@ -14,7 +14,6 @@
 
 .main-content-not-show-sidebar {
   margin-left: 180px;
-  height: 3000px;
   overflow-y: auto;
   border-right: none;
   padding: 16px 10px 16px 16px;

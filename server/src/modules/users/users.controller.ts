@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Put, Req, Request, UploadedFile, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Put, Query, Req, Request, UploadedFile, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ResponseData } from 'src/global/globalClass';
 import { UserEntity } from 'src/entities/user.entity';
@@ -16,9 +16,11 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Get()
   async getAllUser(
-  ): Promise<ResponseData<ResponseUserDto[]>> {
-    const users = await this.usersService.getAllUser();
-    return new ResponseData<ResponseUserDto[]>(users, HttpStatus.OK, 'Lấy tất cả user thành công')
+    @Query('page') page = 1,
+    @Query('limit') limit = 5
+  ): Promise<any> {
+    const users = await this.usersService.getAllUser(page, limit);
+    return new ResponseData(users, HttpStatus.OK, 'Lấy tất cả user thành công')
   }
 
   @Post()
@@ -54,6 +56,13 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard, AdminGuard)
+  @Delete(':id')
+  async deleteUser(@Param('id') userId: number) {
+    const message = await this.usersService.deleteUser(userId);
+    return new ResponseData(null, HttpStatus.OK, message);
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Patch(':id/ban')
   async banUser(
     @Param('id') id: number,
@@ -63,7 +72,7 @@ export class UsersController {
     return new ResponseData(user, HttpStatus.OK, `Ban ${user.username} thành công`);
   }
 
-  @UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id/unban')
   async unbanUser(@Param('id') id: number) {
     const user = await this.usersService.unbanUser(id);

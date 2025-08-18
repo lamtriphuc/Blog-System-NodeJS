@@ -21,7 +21,7 @@ function App() {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer position="bottom-right" />
       <BrowserRouter>
         <Routes>
           {routes.map((route, index) => {
@@ -46,7 +46,16 @@ function App() {
                     </RoleProtectedRoute>
                   ) : element
                 }
-              ></Route>
+              >
+                {route.children?.map((child, i) => (
+                  <Route
+                    key={i}
+                    index={child.index}
+                    path={child.path}
+                    element={<child.page />}
+                  />
+                ))}
+              </Route>
             );
           })}
         </Routes>

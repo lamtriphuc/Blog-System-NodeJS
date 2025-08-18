@@ -19,7 +19,7 @@
 
 .main-content {
   margin: 0 180px;
-  height: 3000px;
+  min-height: calc(100vh - 60px);
   overflow-y: hidden;
   border-right: 1px solid #ccc;
 }

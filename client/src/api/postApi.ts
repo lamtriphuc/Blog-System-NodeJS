@@ -1,7 +1,7 @@
 import axiosInstance from "./axios";
 
-export const getAllPost = async () => {
-    const response = await axiosInstance.get('/posts');
+export const getAllPost = async (page = 1) => {
+    const response = await axiosInstance.get(`/posts?page=${page}`);
     return response.data;
 }
 
@@ -36,6 +36,11 @@ export const createPost = async (formData: FormData) => {
 
 export const savePost = async (postId: number) => {
     const response = await axiosInstance.post(`/saved-posts/${postId}`);
+    return response.data;
+};
+
+export const deletePost = async (postId: number) => {
+    const response = await axiosInstance.delete(`/posts/${postId}`);
     return response.data;
 };
 

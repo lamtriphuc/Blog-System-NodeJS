@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe, Put, Delete, Req, UseGuards, Request, UseInterceptors, UploadedFiles, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Post, HttpStatus, Param, ParseIntPipe, Put, Delete, Req, UseGuards, Request, UseInterceptors, UploadedFiles, Patch, Query } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { ResponseData } from 'src/global/globalClass';
 import { PostEntity } from 'src/entities/post.entity';
@@ -26,9 +26,12 @@ export class PostsController {
   }
 
   @Get()
-  async getAllPost(): Promise<ResponseData<PostResponseDto[]>> {
-    const posts = await this.postsService.getAllPost();
-    return new ResponseData<PostResponseDto[]>(posts, HttpStatus.OK, 'Lấy bài viết thành công!');
+  async getAllPost(
+    @Query('page') page = 1,
+    @Query('limit') limit = 5
+  ): Promise<any> {
+    const posts = await this.postsService.getAllPost(page, limit);
+    return new ResponseData(posts, HttpStatus.OK, 'Lấy bài viết thành công!');
   }
 
   @UseGuards(JwtAuthGuard)
@@ -64,11 +67,14 @@ export class PostsController {
     return new ResponseData(post, HttpStatus.OK, 'Cập nhật bài viết thành công');
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   async deletePost(
-    @Param('id', ParseIntPipe) id: number
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: any,
   ): Promise<ResponseData<void>> {
-    await this.postsService.deletePost(id);
+    const user = req.user;
+    await this.postsService.deletePost(id, user);
     return new ResponseData<void>(null, HttpStatus.OK, 'Xóa bài viết thành công');
   }
 }

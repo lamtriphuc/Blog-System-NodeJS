@@ -8,11 +8,17 @@ export const loginUser = async ({ email, password }: { email: string, password: 
 };
 
 export const getUserProfile = async () => {
-    const response = await axiosInstance.get('/auth/profile', {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-        }
-    });
+    const response = await axiosInstance.get('/auth/profile');
+    return response.data;
+};
+
+export const getAllUsers = async (page = 1) => {
+    const response = await axiosInstance.get(`/users?page=${page}`);
+    return response.data;
+};
+
+export const deleteUser = async (id: number) => {
+    const response = await axiosInstance.delete(`/users/${id}`);
     return response.data;
 };
 

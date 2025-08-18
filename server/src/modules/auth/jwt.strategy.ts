@@ -1,8 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { UsersService } from "../users/users.service";
+import { UserEntity } from "src/entities/user.entity";
+import { Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,8 +21,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any) {
-        const email = payload.email;
-        const user = await this.userService.findByEmail(email)
+        const user = await this.userService.findByEmail(payload.email);
+        if (!user) {
+            throw new UnauthorizedException('User không tồn tại');
+        }
+
+        if (user.isBanned && user.bannedUntil && new Date() > user.bannedUntil) {
+            // hết hạn ban → gỡ ban
+            user.isBanned = false;
+            user.bannedUntil = null;
+            await this.userService.save(user);
+        }
+
+        if (user.isBanned) {
+            throw new UnauthorizedException(`Bạn bị ban đến ${user.bannedUntil?.toLocaleString()}`);
+        }
+
         return user;
     }
 }

@@ -89,14 +89,23 @@ export class PostsService {
     }
 
 
-    async getAllPost(): Promise<PostResponseDto[]> {
-        const posts = await this.postRepository.find({
+    async getAllPost(page: number, limit: number) {
+        const [posts, total] = await this.postRepository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit,
             order: {
                 createdAt: 'DESC'
             },
             relations: ['user', 'tags', 'images', 'votes', 'comments']
         })
-        return posts.map(post => new PostResponseDto(post));
+        const res = posts.map(post => new PostResponseDto(post));
+        return {
+            posts: res,
+            total,
+            page,
+            limit,
+            totalPage: Math.ceil(total / limit),
+        };
     }
 
     async getPostDetails(id: number): Promise<PostResponseDto> {
@@ -193,10 +202,19 @@ export class PostsService {
     }
 
 
-    async deletePost(id: number): Promise<void> {
-        const existingPost = await this.postRepository.findOneBy({ id });
+    async deletePost(postId: number, user: any): Promise<void> {
+        console.log(user)
+        const existingPost = await this.postRepository.findOne({
+            where: { id: postId },
+            relations: ['user']
+        })
         if (!existingPost) {
-            throw new NotFoundException(`Bài viết với ID: ${id} không tồn tại`);
+            throw new NotFoundException(`Bài viết với ID: ${postId} không tồn tại`);
+        }
+
+        // Nếu user không phải là tác giả và không phải admin thì chặn
+        if (existingPost.user.id !== user.id && user.role !== 1) {
+            throw new ForbiddenException('Bạn không có quyền xoá bài viết này');
         }
         await this.postRepository.remove(existingPost);
     }

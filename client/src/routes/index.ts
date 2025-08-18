@@ -10,6 +10,9 @@ import RegisterPage from "../pages/RegisterPage/RegisterPage";
 import TagPage from "../pages/TagPage/TagPage";
 import UpdatePostPage from "../pages/UpdatePostPage/UpdatePostPage";
 import UserProfilePage from "../pages/UserProfilePage/UserProfilePage";
+import Dashboard from "../components/AdminComponent/Dashboard";
+import UserAmdin from "../components/AdminComponent/UserAdmin";
+import PostAdmin from "../components/AdminComponent/PostAdmin";
 
 export const routes = [
   {
@@ -70,6 +73,12 @@ export const routes = [
     path: "/admin",
     page: AdminPage,
     isAdmin: true,
+    children: [
+      { index: true, page: Dashboard },
+      { path: "dashboard", page: Dashboard },
+      { path: "users", page: UserAmdin },
+      { path: "posts", page: PostAdmin },
+    ]
   },
   {
     path: "*",

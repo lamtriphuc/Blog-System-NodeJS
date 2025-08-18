@@ -26,6 +26,10 @@ export class UsersService {
         return null;
     }
 
+    async save(user: UserEntity): Promise<UserEntity> {
+        return this.userRepository.save(user);
+    }
+
     async saveRefreshToken(userId: number, refreshToken: string) {
         const user = await this.userRepository.findOneBy({ id: userId });
         if (!user) {
@@ -75,13 +79,30 @@ export class UsersService {
         return this.userRepository.save(newUser);
     }
 
-    async getAllUser(): Promise<ResponseUserDto[]> {
-        const users = await this.userRepository.find({
+    async getAllUser(page: number, limit: number) {
+        page = Number(page);
+        limit = Number(limit);
+
+        const [users, total] = await this.userRepository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit,
+            order: { id: 'ASC' },
             relations: ['posts', 'comments']
-        });
+        })
+
+        // const users = await this.userRepository.find({
+        //     relations: ['posts', 'comments'],
+        //     order: { id: 'ASC' }
+        // });
 
         const result = users.map(user => new ResponseUserDto(user));
-        return result;
+        return {
+            users: result,
+            total,
+            page,
+            limit,
+            totalPage: Math.ceil(total / limit),
+        };
     }
 
     async updateUser(id: number, updateUser: UpdateUserDto): Promise<UserEntity> {
@@ -124,6 +145,13 @@ export class UsersService {
         await this.userRepository.update(userId, { avatarUrl: avatarUrl })
 
         return avatarUrl;
+    }
+
+    async deleteUser(userId: number): Promise<string> {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException('Tài khoản không tồn tại');
+        await this.userRepository.remove(user);
+        return 'Xóa thành công';
     }
 
 

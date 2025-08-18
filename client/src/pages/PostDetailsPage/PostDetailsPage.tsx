@@ -209,7 +209,7 @@ const PostDetailsPage = () => {
                 setIsBookmark(false)
             }
         }
-    }, [savedPosts])
+    }, [savedPosts, postDetails])
 
 
     return (
