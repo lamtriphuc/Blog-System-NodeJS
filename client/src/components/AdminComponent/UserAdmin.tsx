@@ -1,11 +1,15 @@
 import { toast } from "react-toastify";
-import { deleteUser, getAllUsers } from "../../api/authApi";
-import type { PostData } from "../../types";
+import { banUser, deleteUser, getAllUsers, unBanUser } from "../../api/authApi";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useAppDispatch } from "../../store/hooks";
 import { setLoading } from "../../store/uiSlice";
 
+interface ModalInfo {
+    title: string,
+    message: string,
+    buttonString: string
+}
 
 const UserAmdin = () => {
     const dispatch = useAppDispatch();
@@ -13,6 +17,8 @@ const UserAmdin = () => {
 
     const [selectedUserId, setSelectedUserId] = useState<number>(0);
     const [page, setPage] = useState(1);
+    const [isBan, setIsBan] = useState(false);
+    const [hours, setHours] = useState(1);
 
     const fetchAllUsers = async ({ queryKey }: any) => {
         const [, page] = queryKey // lấy page từ queryKey
@@ -44,9 +50,38 @@ const UserAmdin = () => {
             dispatch(setLoading(false));
         }
     }
+
+    const banUnBanUser = async ({ userId, hours }: { userId: number, hours: number }) => {
+        try {
+            dispatch(setLoading(true));
+            let response: any = {}
+            if (isBan) {
+                response = await unBanUser(userId);
+            } else {
+                response = await banUser(userId, hours);
+            }
+            //  { data, statusCode, message }
+            toast.success(response?.message);
+            queryClient.invalidateQueries({ queryKey: ['all-user'] })
+            return response?.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message || 'Có lỗi xảy ra';
+            console.error('Lỗi khi sửa bài viết:', message);
+            toast.error(message);
+            throw new Error(message); // phải throw để mutation biết là lỗi
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
     const mutation = useMutation({
         mutationKey: ['delete-user'],
         mutationFn: delUser,
+    })
+
+    const mutationBanUser = useMutation({
+        mutationKey: ['ban-user'],
+        mutationFn: banUnBanUser,
     })
 
     const { data: userData } = useQuery<any>({
@@ -56,9 +91,13 @@ const UserAmdin = () => {
     })
 
     const handleDeleteUser = (userId: number) => {
-        if (selectedUserId === 0) return;
-        console.log(userId)
+        if (userId === 0) return;
         mutation.mutate(userId);
+    }
+
+    const handleBanUser = (userId: number) => {
+        if (userId === 0) return;
+        mutationBanUser.mutate({ userId, hours });
     }
 
     return (
@@ -73,7 +112,7 @@ const UserAmdin = () => {
                         <th>Role</th>
                         <th>Posts</th>
                         <th>Comments</th>
-                        <th>Banned</th>
+                        <th style={{ width: '50px' }}>Banned</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -88,9 +127,27 @@ const UserAmdin = () => {
                             <td>{u.countComment}</td>
                             <td>
                                 {u.isBanned ? (
-                                    <span className="badge bg-danger">Banned</span>
+                                    <button
+                                        type="button"
+                                        className="btn btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#banUserModal"
+                                        onClick={() => {
+                                            setSelectedUserId(u.id)
+                                            setIsBan(true);
+                                        }}
+                                    >Banned</button>
                                 ) : (
-                                    <span className="badge bg-success">Active</span>
+                                    <button
+                                        type="button"
+                                        className="btn btn-success"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#banUserModal"
+                                        onClick={() => {
+                                            setSelectedUserId(u.id);
+                                            setIsBan(false);
+                                        }}
+                                    >Active</button>
                                 )}
                             </td>
                             <td className="d-flex justify-content-evenly">
@@ -126,6 +183,40 @@ const UserAmdin = () => {
                                 data-bs-dismiss="modal"
                                 onClick={() => handleDeleteUser(selectedUserId)}
                             >Xóa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="modal" id="banUserModal" tabIndex={-1}>
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Ban người dùng</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            {!isBan ? (
+                                <div>
+                                    <label className="form-label">Nhập thời gian ban(giờ)</label>
+                                    <input
+                                        type="email"
+                                        className="form-control"
+                                        value={hours}
+                                        onChange={(e) => setHours(Number(e.target.value))}
+                                        placeholder="1" />
+                                </div>
+                            ) : (
+                                <p>Bạn có chắc chắn muốn gỡ ban user ID = {selectedUserId}?</p>
+                            )}
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                data-bs-dismiss="modal"
+                                onClick={() => handleBanUser(selectedUserId)}
+                            >Ban</button>
                         </div>
                     </div>
                 </div>

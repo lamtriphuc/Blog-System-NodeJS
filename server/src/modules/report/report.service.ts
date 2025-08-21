@@ -36,12 +36,21 @@ export class ReportService {
         return new ResponseReportDto(report);
     }
 
-    async findAll() {
-        const reports = await this.reportRepo.find({
+    async findAll(page: number, limit: number) {
+        const [reports, total] = await this.reportRepo.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit,
             relations: ['user', 'post'],
             order: { createdAt: 'DESC' }
         });
-        return reports.map(rp => new ResponseReportDto(rp));
+        const result = reports.map(rp => new ResponseReportDto(rp));
+        return {
+            reports: result,
+            total,
+            page,
+            limit,
+            totalPage: Math.ceil(total / limit),
+        };
     }
 
     async deleteReport(id: number): Promise<void> {

@@ -27,10 +27,10 @@ const PostAdmin = () => {
         }
     }
 
-    const delPost = async (userId: number) => {
+    const delPost = async (postId: number) => {
         try {
             dispatch(setLoading(true));
-            const response = await deletePost(userId);
+            const response = await deletePost(postId);
             //  { data, statusCode, message }
             toast.success(response.message);
             queryClient.invalidateQueries({ queryKey: ['all-post'] })

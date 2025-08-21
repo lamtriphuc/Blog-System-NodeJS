@@ -13,6 +13,8 @@ import UserProfilePage from "../pages/UserProfilePage/UserProfilePage";
 import Dashboard from "../components/AdminComponent/Dashboard";
 import UserAmdin from "../components/AdminComponent/UserAdmin";
 import PostAdmin from "../components/AdminComponent/PostAdmin";
+import ReportAmdin from "../components/AdminComponent/ReportAdmin";
+import TagAdmin from "../components/AdminComponent/TagAdmin";
 
 export const routes = [
   {
@@ -78,6 +80,8 @@ export const routes = [
       { path: "dashboard", page: Dashboard },
       { path: "users", page: UserAmdin },
       { path: "posts", page: PostAdmin },
+      { path: "reports", page: ReportAmdin },
+      { path: "tags", page: TagAdmin },
     ]
   },
   {

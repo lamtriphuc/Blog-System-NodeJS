@@ -4,10 +4,13 @@ import "./TagPage.css";
 import { getAllTag } from "../../api/tagApi";
 import type { TagData } from "../../types";
 import { toast } from "react-toastify";
+import { useState } from "react";
 
 
 
 const TagPage = () => {
+  const [search, setSearch] = useState("");
+
   // FETCH
   const fetchAllTags = async () => {
     try {
@@ -21,11 +24,18 @@ const TagPage = () => {
     }
   }
 
+
   // QUERY 
   const { data: tags } = useQuery({
     queryKey: ['tags'],
     queryFn: fetchAllTags,
   })
+
+
+  // Lọc theo input
+  const filteredTags = tags?.filter((tag: TagData) =>
+    tag.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="d-flex flex-column align-items-start gap-4 w-100">
@@ -41,11 +51,13 @@ const TagPage = () => {
             placeholder="Tìm kiếm thẻ"
             aria-label="Username"
             aria-describedby="basic-addon1"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>
       <div className="tag-container w-100 d-flex flex-wrap gap-2">
-        {tags?.map((tag: TagData, index: number) => (
+        {filteredTags?.map((tag: TagData, index: number) => (
           <TagDetailsComponent key={index} tag={tag} />
         ))}
       </div>

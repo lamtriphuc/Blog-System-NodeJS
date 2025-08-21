@@ -1,16 +1,17 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { getPostDetails, getSavedPost, savePost } from '../../api/postApi'
+import { deletePost, getPostDetails, getSavedPost, savePost } from '../../api/postApi'
 import './PostDetailsPage.css'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import TagComponent from '../../components/TagComponent/TagComponent';
 import dayjs from '../../utils/dayjs';
-import { createComment, getCommentsByPostId } from '../../api/commentApi';
+import { createComment, deleteComment, getCommentsByPostId, updateComment } from '../../api/commentApi';
 import { useEffect, useState } from 'react';
 import { getVoteByUser, updateVote } from '../../api/voteApi';
 import { useAppSelector } from '../../store/hooks';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../store/uiSlice';
+import { Dropdown } from 'react-bootstrap';
 
 const PostDetailsPage = () => {
     const nagigate = useNavigate();
@@ -22,6 +23,8 @@ const PostDetailsPage = () => {
     const user = useAppSelector(state => state.auth.user);
     const [localVoteType, setLocalVoteType] = useState(0);
     const [isBookmark, setIsBookmark] = useState(false);
+    const [editCmtId, setEditCmtId] = useState(0);
+    const [updatedCmt, setUpdatedCmt] = useState('');
 
     const fetchPostDetails = async () => {
         try {
@@ -71,6 +74,7 @@ const PostDetailsPage = () => {
         try {
             const response = await createComment(data);
             //  { data, statusCode, message }
+            toast.success(response.message)
             return response.data;
         } catch (error: any) {
             const message = error?.response?.data?.message || 'Có lỗi xảy ra';
@@ -93,6 +97,23 @@ const PostDetailsPage = () => {
             dispatch(setLoading(false));
         }
     }
+
+    const updateCmt = async ({ cmtId, content }: { cmtId: number, content: string }) => {
+        try {
+            dispatch(setLoading(true));
+            const response = await updateComment(cmtId, { content });
+            queryClient.invalidateQueries({ queryKey: ['comments'] });
+            toast.success(response.message)
+            return response.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message;
+            console.log('Lỗi: ', message);
+            toast.error('Lỗi: ', message);
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
     const savePostByUser = async () => {
         try {
             const response = await savePost(postDetails.id);
@@ -132,7 +153,6 @@ const PostDetailsPage = () => {
     const mutation = useMutation({
         mutationFn: sendComment,
         onSuccess: () => {
-            toast.success('Bình luận thành công');
             setNewCmt('');
             queryClient.invalidateQueries({ queryKey: ['comments', postId] }); // refetch comment list
             queryClient.invalidateQueries({ queryKey: ['post-details'] });
@@ -189,7 +209,6 @@ const PostDetailsPage = () => {
         }
         savePostMutation.mutate();
     }
-    console.log(savedPosts)
 
     useEffect(() => {
         if (userVotes && userVotes.length > 0) {
@@ -211,20 +230,95 @@ const PostDetailsPage = () => {
         }
     }, [savedPosts, postDetails])
 
+    const delPost = async (postId: number) => {
+        try {
+            dispatch(setLoading(true));
+            const response = await deletePost(postId);
+            //  { data, statusCode, message }
+            toast.success(response.message);
+            nagigate('/')
+            return response.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message || 'Có lỗi xảy ra';
+            console.error('Lỗi khi sửa bài viết:', message);
+            toast.error(message);
+            throw new Error(message); // phải throw để mutation biết là lỗi
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
+    const delCmt = async (cmtId: number) => {
+        try {
+            dispatch(setLoading(true));
+            const response = await deleteComment(cmtId);
+            //  { data, statusCode, message }
+            toast.success(response.message);
+            queryClient.invalidateQueries({ queryKey: ['comments'] });
+            return response.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message || 'Có lỗi xảy ra';
+            console.error('Lỗi khi sửa bài viết:', message);
+            toast.error(message);
+            throw new Error(message);
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+    const mutationDelPost = useMutation({
+        mutationKey: ['delete-post'],
+        mutationFn: delPost,
+    })
+
+    const mutationDelCmt = useMutation({
+        mutationKey: ['delete-comment'],
+        mutationFn: delCmt,
+    })
+
+    const mutationUpdateCmt = useMutation({
+        mutationKey: ['update-comment'],
+        mutationFn: updateCmt,
+    })
+
+    const handleDeletePost = () => {
+        if (!postId) return;
+        mutationDelPost.mutate(postId);
+    }
+
+    const handleUpdateCmt = () => {
+        if (!editCmtId) return;
+        mutationUpdateCmt.mutate({ cmtId: editCmtId, content: updatedCmt })
+        setEditCmtId(0);
+    }
+
+    const handleDelCmt = (id: number) => {
+        if (!id) return;
+        mutationDelCmt.mutate(id)
+    }
 
     return (
         <div>
             <div className="post-title">
                 <div className='d-flex justify-content-between'>
                     <h4>{postDetails?.title}</h4>
-                    {postDetails?.user?.id === user?.id && (
-                        <button
-                            onClick={() => nagigate(`/update-post/${postDetails.id}`)}
-                            className="btn btn-primary"
-                            style={{ cursor: 'pointer' }}
-                        // data-bs-toggle="modal" data-bs-target="#updatePostModal"
-                        ><span>Sửa bài viết  </span><i className="bi bi-pencil-square"></i></button>
-                    )}
+                    <div className='d-flex flex-column gap-2'>
+                        {postDetails?.user?.id === user?.id && (
+                            <button
+                                onClick={() => nagigate(`/update-post/${postDetails.id}`)}
+                                className="btn btn-primary"
+                                style={{ cursor: 'pointer' }}
+                            // data-bs-toggle="modal" data-bs-target="#updatePostModal"
+                            ><span>Sửa bài viết  </span><i className="bi bi-pencil-square"></i></button>
+                        )}
+                        {(postDetails?.user?.id === user?.id || user?.role === 1) && (
+                            <button
+                                onClick={handleDeletePost}
+                                className="btn btn-danger"
+                                style={{ cursor: 'pointer' }}
+                            // data-bs-toggle="modal" data-bs-target="#updatePostModal"
+                            ><span>Xóa bài viết  </span><i className="bi bi-trash3-fill"></i></button>
+                        )}
+                    </div>
                 </div>
                 <div className='post-info d-flex gap-3 my-3'>
                     <span className="" style={{ height: '30px' }}>
@@ -292,22 +386,58 @@ const PostDetailsPage = () => {
                     <h5>{postDetails?.commentCount} Câu trả lời</h5>
                     {comments?.map((cmt: any, index: number) => {
                         return (
-                            <div key={index} className='post-answer'>
-                                <p>
-                                    {cmt.content}
-                                </p>
-                                <div className='post-info d-flex gap-3 my-3'>
-                                    <span className="" style={{ height: '30px' }}>
-                                        {cmt.user.avatar ? (
-                                            <img className="avatar mb-0" src={cmt.user.avatar} alt="" />
-                                        ) : (
-                                            <i className="bi bi-person-circle"></i>
-                                        )}
-                                    </span>
-                                    <span className="">{cmt.user.username}</span>
-                                    <span>Đăng: {dayjs(cmt.createdAt).fromNow()}</span>
-                                    <span>Sửa: {dayjs(cmt.updatedAt).fromNow()}</span>
+                            <div key={index} className='post-answer d-flex justify-content-between align-items-center'>
+                                <div className=''>
+                                    {editCmtId === cmt.id ? (
+                                        <div>
+                                            <textarea
+                                                className="form-control mb-2"
+                                                rows={3}
+                                                value={updatedCmt}
+                                                onChange={(e) => setUpdatedCmt(e.target.value)}
+                                            ></textarea>
+                                            <button
+                                                className="btn btn-primary"
+                                                onClick={handleUpdateCmt}
+                                            >Đăng</button>
+                                        </div>
+                                    ) : (
+                                        <p>{cmt.content}</p>
+                                    )}
+                                    <div className='post-info d-flex gap-3 my-3'>
+                                        <span className="" style={{ height: '30px' }}>
+                                            {cmt.user.avatar ? (
+                                                <img className="avatar mb-0" src={cmt.user.avatar} alt="" />
+                                            ) : (
+                                                <i className="bi bi-person-circle"></i>
+                                            )}
+                                        </span>
+                                        <span className="">{cmt.user.username}</span>
+                                        <span>Đăng: {dayjs(cmt.createdAt).fromNow()}</span>
+                                        <span>Sửa: {dayjs(cmt.updatedAt).fromNow()}</span>
+                                    </div>
+
                                 </div>
+                                {user?.id == cmt.user.id && (
+                                    <div className="dropdown">
+                                        <Dropdown>
+                                            <Dropdown.Toggle variant="" id="dropdown-basic" bsPrefix="btn">
+                                                <i className="bi bi-three-dots"></i>
+                                            </Dropdown.Toggle>
+
+                                            <Dropdown.Menu>
+                                                <Dropdown.Item
+                                                    onClick={() => {
+                                                        setEditCmtId(cmt.id);
+                                                        setUpdatedCmt(cmt.content);
+                                                    }} >Sửa</Dropdown.Item>
+                                                <Dropdown.Item
+                                                    onClick={() => handleDelCmt(cmt.id)}
+                                                >Xóa</Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </div>
+                                )}
                             </div>
                         )
                     })}

@@ -22,6 +22,18 @@ export const deleteUser = async (id: number) => {
     return response.data;
 };
 
+
+export const banUser = async (id: number, hours?: number) => {
+    const response = await axiosInstance.patch(`/users/${id}/ban`, { hours });
+    return response.data;
+};
+
+export const unBanUser = async (id: number) => {
+    const response = await axiosInstance.patch(`/users/${id}/unban`);
+    return response.data;
+};
+
+
 export const logoutUser = async () => {
     const response = await axiosInstance.post('/auth/logout');
     return response.data;

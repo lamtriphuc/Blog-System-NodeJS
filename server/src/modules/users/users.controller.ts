@@ -66,7 +66,7 @@ export class UsersController {
   @Patch(':id/ban')
   async banUser(
     @Param('id') id: number,
-    @Body('hours') hours?: number
+    @Body('hours') hours: number = 1
   ) {
     const user = await this.usersService.banUser(id, hours);
     return new ResponseData(user, HttpStatus.OK, `Ban ${user.username} thành công`);

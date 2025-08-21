@@ -33,10 +33,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             await this.userService.save(user);
         }
 
-        if (user.isBanned) {
-            throw new UnauthorizedException(`Bạn bị ban đến ${user.bannedUntil?.toLocaleString()}`);
-        }
-
         return user;
     }
 }

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { TagEntity } from "src/entities/tag.entity";
 import { Repository } from "typeorm";
@@ -24,11 +24,28 @@ export class TagsService {
         return await this.tagRepository.save(newTag);
     }
 
-    async getAllTag(): Promise<any> {
-        const tags = this.tagRepository.find({
+    async getAllTagPaninate(page: number, limit: number): Promise<any> {
+        const [tags, total] = await this.tagRepository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit,
             relations: ['posts']
         });
-        return (await tags).map(tag => new TagResponseDto(tag));
+        const result = await tags.map(tag => new TagResponseDto(tag));
+        return {
+            tags: result,
+            total,
+            page,
+            limit,
+            totalPage: Math.ceil(total / limit),
+        };
+    }
+
+    async getAllTag(): Promise<any> {
+        const tags = await this.tagRepository.find({
+            relations: ['posts']
+        });
+        const result = await tags.map(tag => new TagResponseDto(tag));
+        return result;
     }
 
     async getTrendingTags(): Promise<TagResponseDto[]> {
@@ -45,5 +62,13 @@ export class TagsService {
             .sort((a, b) => b.postThisMonth - a.postThisMonth);
 
         return res;
+    }
+
+    async deleteTag(id: number): Promise<void> {
+        const tag = await this.tagRepository.findOne({ where: { id } });
+        if (!tag) {
+            throw new NotFoundException(`tag với id ${id} không tồn tại`);
+        }
+        await this.tagRepository.remove(tag);
     }
 }

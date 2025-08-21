@@ -5,12 +5,13 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { ResponseData } from 'src/global/globalClass';
 import { CommentResponseDto } from './dto/response-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { BanGuard } from '../auth/guards/check-ban.guard';
 
 @Controller('api/comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) { }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, BanGuard)
   @Post()
   async createComment(
     @Request() req: any,

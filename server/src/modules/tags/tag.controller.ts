@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Query, UseGuards } from "@nestjs/common";
 import { TagEntity } from "src/entities/tag.entity";
 import { Repository } from "typeorm";
 import { TagsService } from "./tag.service";
@@ -7,6 +7,8 @@ import { PostResponseDto } from "../posts/dto/response-post.dto";
 import { PostsService } from "../posts/posts.service";
 import { ResponseData } from "src/global/globalClass";
 import { TagResponseDto } from "./dto/response-tag.dto";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { AdminGuard } from "../auth/guards/admin.guard";
 
 @Controller('api/tags')
 export class TagController {
@@ -24,8 +26,16 @@ export class TagController {
     }
 
     @Get()
-    async getAllTag(
-    ): Promise<any> {
+    async getAllTagPaninate(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 5
+    ) {
+        const tags = await this.tagService.getAllTagPaninate(page, limit);
+        return new ResponseData(tags, HttpStatus.OK, 'Lấy tags thành công');
+    }
+
+    @Get('all-tag')
+    async getAllTag() {
         const tags = await this.tagService.getAllTag();
         return new ResponseData(tags, HttpStatus.OK, 'Lấy tags thành công');
     }
@@ -42,5 +52,14 @@ export class TagController {
     ): Promise<ResponseData<PostResponseDto[]>> {
         const posts = await this.postsService.getPostsByTag(tagId);
         return new ResponseData<PostResponseDto[]>(posts, HttpStatus.OK, 'Lấy bài viết theo tag thành công!');
+    }
+
+    @UseGuards(JwtAuthGuard, AdminGuard)
+    @Delete(':id')
+    async deleteReport(
+        @Param('id') id: number
+    ): Promise<ResponseData<null>> {
+        await this.tagService.deleteTag(id);
+        return new ResponseData(null, HttpStatus.OK, 'Xóa thẻ thành công');
     }
 }

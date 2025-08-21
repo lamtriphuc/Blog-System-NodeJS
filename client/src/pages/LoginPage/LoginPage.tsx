@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../store/authSlice";
-import type { RootState } from "../../store";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -24,6 +23,7 @@ const LoginPage = () => {
       localStorage.setItem('accessToken', data.data.access_token);
       toast.success(data.message);
       try {
+        console.log('ok')
         const { data: profile } = await queryClient.fetchQuery({
           queryKey: ['profile'],
           queryFn: getUserProfile,

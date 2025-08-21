@@ -12,7 +12,7 @@ const Sidebar = () => {
                 <li><Link className="nav-link" to="/admin/users">Người dùng</Link></li>
                 <li><Link className="nav-link" to="/admin/posts">Bài viết</Link></li>
                 <li><Link className="nav-link" to="/admin/reports">Báo cáo</Link></li>
-                <li><Link className="nav-link" to="/admin/settings">Cài đặt</Link></li>
+                <li><Link className="nav-link" to="/admin/tags">Thẻ</Link></li>
             </ul>
         </div>
     );

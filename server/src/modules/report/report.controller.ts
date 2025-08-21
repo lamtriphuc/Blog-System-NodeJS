@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { ResponseData } from "src/global/globalClass";
 import { ResponseReportDto } from "./dto/response-report.dto";
 import { ReportService } from "./report.service";
@@ -23,9 +23,12 @@ export class ReportController {
 
     @UseGuards(JwtAuthGuard, AdminGuard)
     @Get()
-    async findAll(): Promise<ResponseData<ResponseReportDto[]>> {
-        const reports = await this.reportService.findAll();
-        return new ResponseData<ResponseReportDto[]>(reports, HttpStatus.OK, 'Lấy báo cáo thành công');
+    async findAll(
+        @Query('page') page = 1,
+        @Query('limit') limit = 5
+    ) {
+        const res = await this.reportService.findAll(page, limit);
+        return new ResponseData(res, HttpStatus.OK, 'Lấy báo cáo thành công');
     }
 
     @UseGuards(JwtAuthGuard, AdminGuard)
