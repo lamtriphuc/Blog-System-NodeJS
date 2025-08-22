@@ -11,7 +11,8 @@ import { getVoteByUser, updateVote } from '../../api/voteApi';
 import { useAppSelector } from '../../store/hooks';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../store/uiSlice';
-import { Dropdown } from 'react-bootstrap';
+import { Button, Dropdown, Modal } from 'react-bootstrap';
+import { createReport } from '../../api/reportApi';
 
 const PostDetailsPage = () => {
     const nagigate = useNavigate();
@@ -25,6 +26,8 @@ const PostDetailsPage = () => {
     const [isBookmark, setIsBookmark] = useState(false);
     const [editCmtId, setEditCmtId] = useState(0);
     const [updatedCmt, setUpdatedCmt] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [reason, setReason] = useState('');
 
     const fetchPostDetails = async () => {
         try {
@@ -265,6 +268,24 @@ const PostDetailsPage = () => {
             dispatch(setLoading(false));
         }
     }
+
+    const report = async () => {
+        try {
+            dispatch(setLoading(true));
+            const response = await createReport({ postId, reason })
+            //  { data, statusCode, message }
+            toast.success(response.message);
+            return response.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message || 'Có lỗi xảy ra';
+            console.error('Lỗi khi sửa bài viết:', message);
+            toast.error(message);
+            throw new Error(message);
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
     const mutationDelPost = useMutation({
         mutationKey: ['delete-post'],
         mutationFn: delPost,
@@ -278,6 +299,14 @@ const PostDetailsPage = () => {
     const mutationUpdateCmt = useMutation({
         mutationKey: ['update-comment'],
         mutationFn: updateCmt,
+    })
+
+    const mutationReport = useMutation({
+        mutationKey: ['report'],
+        mutationFn: report,
+        onSuccess: () => {
+            setReason('');
+        }
     })
 
     const handleDeletePost = () => {
@@ -294,6 +323,10 @@ const PostDetailsPage = () => {
     const handleDelCmt = (id: number) => {
         if (!id) return;
         mutationDelCmt.mutate(id)
+    }
+
+    const handleReport = () => {
+        mutationReport.mutate();
     }
 
     return (
@@ -318,6 +351,44 @@ const PostDetailsPage = () => {
                             // data-bs-toggle="modal" data-bs-target="#updatePostModal"
                             ><span>Xóa bài viết  </span><i className="bi bi-trash3-fill"></i></button>
                         )}
+                        {(postDetails?.user?.id !== user?.id && user?.role != 1) && (
+                            <Dropdown>
+                                <Dropdown.Toggle variant="" id="dropdown-basic" bsPrefix="btn">
+                                    <i className="bi bi-three-dots"></i>
+                                </Dropdown.Toggle>
+
+                                <Dropdown.Menu>
+                                    <Dropdown.Item
+                                        onClick={() => setShowModal(true)}
+                                    >Báo cáo</Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        )}
+                        <Modal show={showModal} onHide={() => setShowModal(false)}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Báo cáo</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <label htmlFor="">Nội dung báo cáo</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={reason}
+                                    onChange={e => setReason(e.target.value)}
+                                />
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={() => setShowModal(false)}>
+                                    Đóng
+                                </Button>
+                                <Button variant="primary" onClick={() => {
+                                    setShowModal(false)
+                                    handleReport();
+                                }}>
+                                    Báo cáo
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
                     </div>
                 </div>
                 <div className='post-info d-flex gap-3 my-3'>
@@ -378,7 +449,7 @@ const PostDetailsPage = () => {
                             </div>
                             <div className='post-tags mt-3 d-flex gap-2'>
                                 {postDetails?.tags?.map((tag: any) => {
-                                    return <TagComponent key={tag?.id} tagName={tag?.name} isAllowDel={false} onDelete={() => { }} />
+                                    return <TagComponent key={tag?.id} tagId={tag?.id} tagName={tag?.name} isAllowDel={false} onDelete={() => { }} />
                                 })}
                             </div>
                         </div>

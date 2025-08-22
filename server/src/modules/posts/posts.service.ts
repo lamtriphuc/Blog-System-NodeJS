@@ -75,17 +75,31 @@ export class PostsService {
         }
     }
 
-    async getPostsByTag(tagId: number): Promise<PostResponseDto[]> {
-        const tag = await this.tagRepository.findOne({
-            where: { id: tagId },
-            relations: ['posts', 'posts.user', 'posts.images', 'posts.tags'],
+    async getPostsByTag(tagId: number, page: number, limit: number) {
+        const [postsByTag, total] = await this.postRepository.findAndCount({
+            where: {
+                tags: { id: tagId }
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                id: 'DESC'
+            },
+            relations: ['user', 'tags', 'images', 'votes', 'comments'],
         });
 
-        if (!tag) {
-            throw new NotFoundException(`Tag với ID ${tagId} không tồn tại`);
+        if (!postsByTag) {
+            throw new NotFoundException(`Tag với ID ${tagId} không có bài viết nào`);
         }
 
-        return tag.posts.map(post => new PostResponseDto(post));
+        const res = postsByTag.map(post => new PostResponseDto(post));
+        return {
+            posts: res,
+            total,
+            page,
+            limit,
+            totalPage: Math.ceil(total / limit),
+        };
     }
 
 

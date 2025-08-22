@@ -10,7 +10,7 @@ const TagDetailsComponent: React.FC<TagDetailsProps> = ({ tag }) => {
   return (
     <div className="tag-details p-3">
       <div className="tag-title my-2">
-        <TagComponent tagName={tag.name} />
+        <TagComponent tagId={tag.id} key={tag.id} tagName={tag.name} isAllowDel={false} onDelete={() => { }} />
       </div>
       <p className="tag-description line-clamp-4">{tag.description}</p>
       <div className="num-of-post d-flex justify-content-between">

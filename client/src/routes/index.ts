@@ -15,6 +15,7 @@ import UserAmdin from "../components/AdminComponent/UserAdmin";
 import PostAdmin from "../components/AdminComponent/PostAdmin";
 import ReportAmdin from "../components/AdminComponent/ReportAdmin";
 import TagAdmin from "../components/AdminComponent/TagAdmin";
+import PostTagPage from "../pages/PostTagPage/PostTagPage";
 
 export const routes = [
   {
@@ -68,6 +69,12 @@ export const routes = [
   {
     path: "/update-post/:id",
     page: UpdatePostPage,
+    isShowHeader: true,
+    isShowSidebarRight: true,
+  },
+  {
+    path: "/tag/:id/post",
+    page: PostTagPage,
     isShowHeader: true,
     isShowSidebarRight: true,
   },

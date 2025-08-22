@@ -22,6 +22,7 @@ import { VoteModule } from './modules/vote/vote.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { ReportEntity } from './entities/report.entity';
 import { ReportModule } from './modules/report/report.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { ReportModule } from './modules/report/report.module';
     SavePostModule,
     VoteModule,
     CommentModule,
-    ReportModule
+    ReportModule,
+    DashboardModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseService],

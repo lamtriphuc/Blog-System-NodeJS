@@ -2,8 +2,14 @@ import React, { useState } from 'react'
 import { useAppDispatch } from '../../store/hooks';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import { deleteTag, getAllTagPanigate } from '../../api/tagApi';
+import { createTag, deleteTag, getAllTagPanigate } from '../../api/tagApi';
 import { setLoading } from '../../store/uiSlice';
+import { Button, Modal } from 'react-bootstrap';
+
+interface TagState {
+    name: string;
+    description: string;
+}
 
 const TagAdmin = () => {
     const dispatch = useAppDispatch();
@@ -11,6 +17,18 @@ const TagAdmin = () => {
 
     const [selectedTagId, setSelectedTagId] = useState<number>(0);
     const [page, setPage] = useState(1);
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const [newTag, setNewTag] = useState<TagState>({
+        name: '',
+        description: ''
+    })
+
+    const updateTagState = (field: keyof TagState, value: string) => {
+        setNewTag(prev => ({ ...prev, [field]: value }))
+    }
 
     const fetchAllTags = async ({ queryKey }: any) => {
         const [, page] = queryKey // lấy page từ queryKey
@@ -42,6 +60,24 @@ const TagAdmin = () => {
         }
     }
 
+    const AddTag = async () => {
+        try {
+            dispatch(setLoading(true));
+            const response = await createTag(newTag);
+            //  { data, statusCode, message }
+            toast.success(response.message);
+            queryClient.invalidateQueries({ queryKey: ['all-tag'] })
+            return response.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message || 'Có lỗi xảy ra';
+            console.error('Lỗi khi sửa bài viết:', message);
+            toast.error(message);
+            throw new Error(message); // phải throw để mutation biết là lỗi
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
     const { data: tagData } = useQuery({
         queryKey: ['all-tag', page],
         queryFn: fetchAllTags,
@@ -54,15 +90,62 @@ const TagAdmin = () => {
         mutationFn: delTag,
     })
 
+    const mutationAddTag = useMutation({
+        mutationKey: ['add-tag'],
+        mutationFn: AddTag,
+    })
+
     const handleDeleteTag = (tagId: number) => {
         if (tagId === 0) return;
         mutation.mutate(tagId);
     }
-    console.log(tagData)
+
+    const handleAddTag = () => {
+        mutationAddTag.mutate();
+        handleClose();
+    }
 
     return (
         <div style={{ width: '100%' }}>
-            <h3 className='mb-5'>Quản lý người dùng</h3>
+            <div className='d-flex justify-content-between'>
+                <h3 className='mb-5 w-50'>Quản lý thẻ</h3>
+                <span>
+                    <button className='btn btn-primary' onClick={handleShow}>Thêm thẻ</button>
+                </span>
+            </div>
+
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Thêm thẻ</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <label htmlFor="">Tên thẻ</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={newTag.name}
+                        onChange={e => updateTagState('name', e.target.value)}
+                    />
+                    <label htmlFor="">Mô tả</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={newTag.description}
+                        onChange={e => updateTagState('description', e.target.value)}
+                    />
+
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Đóng
+                    </Button>
+                    <Button variant="primary" onClick={handleAddTag}>
+                        Thêm
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+
             <table className="table table-striped table-bordered">
                 <thead className="table-dark">
                     <tr>

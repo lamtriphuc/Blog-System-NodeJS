@@ -1,4 +1,5 @@
 export type TagData = {
+  id: number;
   name: string;
   description: string;
   totalPost: number;

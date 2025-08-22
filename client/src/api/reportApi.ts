@@ -9,3 +9,8 @@ export const deleteReport = async (reportId: number) => {
     const response = await axiosInstance.delete(`/reports/${reportId}`);
     return response.data;
 };
+
+export const createReport = async (data: any) => {
+    const response = await axiosInstance.post(`/reports`, data);
+    return response.data;
+};

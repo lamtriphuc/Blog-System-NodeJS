@@ -17,12 +17,13 @@ export class TagController {
         private readonly postsService: PostsService
     ) { }
 
+    @UseGuards(JwtAuthGuard, AdminGuard)
     @Post()
     async createTag(
         @Body() createTagDto: CreateTagDto
     ): Promise<any> {
         const newTag = this.tagService.createTag(createTagDto);
-        return newTag;
+        return new ResponseData(newTag, HttpStatus.OK, 'Thêm thẻ thành công');
     }
 
     @Get()
@@ -48,10 +49,12 @@ export class TagController {
 
     @Get('/:tagId')
     async getPostsByTag(
-        @Param('tagId', ParseIntPipe) tagId: number
-    ): Promise<ResponseData<PostResponseDto[]>> {
-        const posts = await this.postsService.getPostsByTag(tagId);
-        return new ResponseData<PostResponseDto[]>(posts, HttpStatus.OK, 'Lấy bài viết theo tag thành công!');
+        @Param('tagId', ParseIntPipe) tagId: number,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 5
+    ) {
+        const posts = await this.postsService.getPostsByTag(tagId, page, limit);
+        return new ResponseData(posts, HttpStatus.OK, 'Lấy bài viết theo tag thành công!');
     }
 
     @UseGuards(JwtAuthGuard, AdminGuard)

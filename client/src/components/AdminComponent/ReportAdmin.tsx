@@ -65,7 +65,7 @@ const ReportAmdin = () => {
 
     return (
         <div style={{ width: '100%' }}>
-            <h3 className='mb-5'>Quản lý người dùng</h3>
+            <h3 className='mb-5'>Quản lý báo cáo</h3>
             <table className="table table-striped table-bordered">
                 <thead className="table-dark">
                     <tr>

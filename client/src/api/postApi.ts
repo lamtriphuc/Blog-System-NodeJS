@@ -15,6 +15,11 @@ export const getPostByUser = async () => {
     return response.data;
 }
 
+export const getPostByTagId = async (id: number, page: number) => {
+    const response = await axiosInstance.get(`/tags/${id}?page=${page}`);
+    return response.data;
+}
+
 export const getPostDetails = async ({ id }: { id: number }) => {
     const response = await axiosInstance.get(`/posts/${id}`);
     return response.data;

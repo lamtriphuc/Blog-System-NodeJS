@@ -273,6 +273,7 @@ const UpdatePostPage = () => {
                 <div className='tags-area mt-2 d-flex gap-1'>
                     {selectedTags?.map((tag: any) => (
                         <TagComponent
+                            tagId={tag.id}
                             key={tag.id}
                             tagName={tag.name}
                             isAllowDel={true}
