@@ -59,6 +59,7 @@ export const routes = [
     path: "/notification",
     page: NotificationPage,
     isShowHeader: true,
+    isShowSidebarRight: true,
   },
   {
     path: "/create-post",

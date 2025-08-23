@@ -23,6 +23,8 @@ import { CommentModule } from './modules/comment/comment.module';
 import { ReportEntity } from './entities/report.entity';
 import { ReportModule } from './modules/report/report.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { NotificationEntity } from './entities/notification.entity';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -34,7 +36,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [UserEntity, PostEntity, CommentEntity, VoteEntity, SavedPostEntity, PostImageEntity, TagEntity, ReportEntity],
+      entities: [UserEntity, PostEntity, CommentEntity, VoteEntity, SavedPostEntity, PostImageEntity, TagEntity, ReportEntity, NotificationEntity],
       synchronize: true,
     }),
     PostsModule,
@@ -45,7 +47,8 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     VoteModule,
     CommentModule,
     ReportModule,
-    DashboardModule
+    DashboardModule,
+    NotificationModule
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseService],

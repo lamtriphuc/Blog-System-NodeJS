@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import { PostEntity } from 'src/entities/post.entity';
 import { UserEntity } from 'src/entities/user.entity';
 import { ResponseVoteDto } from './dto/response-vote.dto';
+import { NotificationsService } from '../notification/notification.service';
+import { NotificationsGateway } from '../notification/notifications.gateway';
 
 @Injectable()
 export class VoteService {
@@ -18,12 +20,16 @@ export class VoteService {
     private postRepository: Repository<PostEntity>,
 
     @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>
+    private userRepository: Repository<UserEntity>,
+
+    private readonly notificationService: NotificationsService,
+    private readonly notificationGateway: NotificationsGateway
   ) { }
 
   async vote(userId: number, { postId, voteType }: CreateVoteDto): Promise<string> {
     const post = await this.postRepository.findOne({
-      where: { id: postId }
+      where: { id: postId },
+      relations: ['user']
     })
     if (!post) {
       throw new NotFoundException('Bài viết không tồn tại');
@@ -40,6 +46,22 @@ export class VoteService {
       where: { user: { id: userId }, post: { id: postId } }
     })
 
+    if (post.user.id !== userId) {
+      await this.notificationService.createNotification(
+        post.user.id, // chủ post
+        'vote',
+        post.id,
+        `${user.username} đã vote bài viết của bạn`
+      )
+
+      // real time
+      this.notificationGateway.sendToUser(
+        post.user.id,
+        { message: `${user.username} đã vote bài viết của bạn` }
+      );
+    }
+
+
     if (existingVote) {
       if (existingVote.voteType === voteType) {
         await this.voteRepository.remove(existingVote);
@@ -50,6 +72,7 @@ export class VoteService {
       await this.voteRepository.save(existingVote);
       return 'Cập nhật vote thành công';
     }
+
 
     const newVote = this.voteRepository.create({ user, post, voteType })
     await this.voteRepository.save(newVote);

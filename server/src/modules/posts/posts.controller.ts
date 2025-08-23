@@ -44,6 +44,12 @@ export class PostsController {
     return new ResponseData<PostResponseDto>(posts, HttpStatus.OK, 'Lấy bài viết của User');
   }
 
+  @Get('/:id/related')
+  async getRelatedPosts(@Param('id') id: number) {
+    const posts = await this.postsService.getRelatedPosts(id);
+    return new ResponseData<PostResponseDto>(posts, HttpStatus.OK, 'Lấy bài viết liên quan');
+  }
+
   @Get('/:id')
   async getPostDetails(
     @Param('id', ParseIntPipe) id: number

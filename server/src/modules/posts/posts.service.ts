@@ -102,6 +102,31 @@ export class PostsService {
         };
     }
 
+    async getRelatedPosts(postId: number) {
+        // lấy post hiện tại + tags
+        const post = await this.postRepository.findOne({
+            where: { id: postId },
+            relations: ['tags'],
+        });
+        if (!post) return [];
+
+        const tagIds = post.tags.map(t => t.id);
+
+        // lấy các post khác có chung tag
+        const relatedPosts = await this.postRepository
+            .createQueryBuilder('post')
+            .leftJoin('post.tags', 'tag')
+            .leftJoinAndSelect('post.user', 'user')
+            .where('tag.id IN (:...tagIds)', { tagIds })
+            .andWhere('post.id != :postId', { postId })
+            .orderBy('post.createdAt', 'DESC')
+            .take(5)
+            .getMany();
+
+        const res = relatedPosts.map(p => new PostResponseDto(p));
+        return res;
+    }
+
 
     async getAllPost(page: number, limit: number) {
         const [posts, total] = await this.postRepository.findAndCount({

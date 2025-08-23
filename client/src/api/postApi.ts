@@ -5,6 +5,11 @@ export const getAllPost = async (page = 1) => {
     return response.data;
 }
 
+export const getRelatedPost = async (postId: number) => {
+    const response = await axiosInstance.get(`/posts/${postId}/related`);
+    return response.data;
+}
+
 export const getSavedPost = async () => {
     const response = await axiosInstance.get('/saved-posts');
     return response.data;

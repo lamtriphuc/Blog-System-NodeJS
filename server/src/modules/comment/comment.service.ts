@@ -7,6 +7,9 @@ import { Repository } from 'typeorm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CommentResponseDto } from './dto/response-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { NotificationEntity } from 'src/entities/notification.entity';
+import { NotificationsService } from '../notification/notification.service';
+import { NotificationsGateway } from '../notification/notifications.gateway';
 
 @Injectable()
 export class CommentService {
@@ -19,6 +22,9 @@ export class CommentService {
 
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
+
+        private readonly notificationService: NotificationsService,
+        private readonly notificationGateway: NotificationsGateway
     ) { }
 
     async createComment(userId: number, createCommentDto: CreateCommentDto): Promise<CommentResponseDto> {
@@ -29,7 +35,8 @@ export class CommentService {
             throw new NotFoundException('Người dùng không tồn tại');
         }
         const post = await this.postRepository.findOne({
-            where: { id: createCommentDto.postId }
+            where: { id: createCommentDto.postId },
+            relations: ['user'],
         })
         if (!post) {
             throw new NotFoundException('Bài viết không tồn tại');
@@ -40,8 +47,25 @@ export class CommentService {
             user: user,
             post: post
         })
+
         await this.commentRepository.save(comment);
 
+        if (post.user.id !== userId) {
+            //gửi tb
+            await this.notificationService.createNotification(
+                post.user.id, // chủ post
+                'comment',
+                post.id,
+                `${user.username} đã trả lời bài viết của bạn`
+            )
+
+            // real time
+            this.notificationGateway.sendToUser(
+                post.user.id,
+                { message: `${user.username} đã trả lời bài viết của bạn` }
+            );
+
+        }
         const res = new CommentResponseDto(comment);
 
         return res;

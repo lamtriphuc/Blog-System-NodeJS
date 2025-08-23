@@ -2,7 +2,7 @@ import React from 'react'
 import { toast } from 'react-toastify';
 import { setLoading } from '../../store/uiSlice';
 import { useAppDispatch } from '../../store/hooks';
-import { getStats } from '../../api/dashboardApi';
+import { getStats } from '../../api/commonApi';
 import { useQuery } from '@tanstack/react-query';
 
 const Dashboard = () => {

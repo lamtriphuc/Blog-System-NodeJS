@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { deletePost, getPostDetails, getSavedPost, savePost } from '../../api/postApi'
+import { deletePost, getPostDetails, getRelatedPost, getSavedPost, savePost } from '../../api/postApi'
 import './PostDetailsPage.css'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -28,8 +28,10 @@ const PostDetailsPage = () => {
     const [updatedCmt, setUpdatedCmt] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [reason, setReason] = useState('');
+    const navigate = useNavigate();
 
-    const fetchPostDetails = async () => {
+    const fetchPostDetails = async ({ queryKey }: { queryKey: [string, number] }) => {
+        const [, postId] = queryKey;
         try {
             const response = await getPostDetails({ id: postId });
             return response.data;
@@ -121,6 +123,18 @@ const PostDetailsPage = () => {
         try {
             const response = await savePost(postDetails.id);
             toast.success(response.message)
+            return response.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message;
+            console.log('Lỗi: ', message);
+            toast.error('Lỗi: ', message);
+        }
+    }
+
+    const getRelated = async () => {
+        try {
+            const response = await getRelatedPost(postId);
+            return response.data
         } catch (error: any) {
             const message = error?.response?.data?.message;
             console.log('Lỗi: ', message);
@@ -131,8 +145,13 @@ const PostDetailsPage = () => {
 
     // USE QUERY
     const { data: postDetails } = useQuery({
-        queryKey: ['post-details'],
+        queryKey: ['post-details', postId],
         queryFn: fetchPostDetails,
+        enabled: !!postId && !isNaN(postId),
+    })
+    const { data: relatedPost } = useQuery({
+        queryKey: ['related-post'],
+        queryFn: getRelated,
         enabled: !!postId && !isNaN(postId),
     })
     const { data: comments } = useQuery({
@@ -531,13 +550,26 @@ const PostDetailsPage = () => {
                 </div>
                 <div className="post-related">
                     <h6>Bài viết liên quan</h6>
-                    <div>bài post 1</div>
-                    <div>bài post 1</div>
-                    <div>bài post 1</div>
-                    <div>bài post 1</div>
+                    {relatedPost?.map((p: any) => {
+                        return (
+                            <div key={p?.id}
+                                onClick={() => navigate(`/post-details/${p.id}`)}
+                                style={{
+                                    cursor: 'pointer',
+                                    borderBottom: '1px solid #ccc', fontSize: '12px',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: '250px'
+                                }}>
+                                < div style={{ fontSize: '16px' }}>{p.title}</div>
+                                <div style={{ fontSize: '12px' }}>{p.content}</div>
+                            </div>
+                        )
+                    })}
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 

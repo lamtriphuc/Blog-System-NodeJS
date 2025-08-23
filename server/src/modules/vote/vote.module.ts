@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { VoteEntity } from 'src/entities/vote.entity';
 import { PostEntity } from 'src/entities/post.entity';
 import { UserEntity } from 'src/entities/user.entity';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([VoteEntity, PostEntity, UserEntity])],
+  imports: [TypeOrmModule.forFeature([VoteEntity, PostEntity, UserEntity]), NotificationModule],
   controllers: [VoteController],
   providers: [VoteService],
 })

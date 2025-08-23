@@ -4,6 +4,7 @@ import { CommentEntity } from './comment.entity';
 import { VoteEntity } from './vote.entity';
 import { SavedPostEntity } from './saved-post.entity';
 import { ReportEntity } from './report.entity';
+import { NotificationEntity } from './notification.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -48,6 +49,9 @@ export class UserEntity {
 
     @OneToMany(() => ReportEntity, report => report.user)
     reports: ReportEntity[];
+
+    @OneToMany(() => NotificationEntity, notification => notification.user)
+    notifications: NotificationEntity[];
 
     @Column({ name: 'is_banned', default: false })
     isBanned: boolean;

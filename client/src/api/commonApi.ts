@@ -4,3 +4,8 @@ export const getStats = async () => {
     const response = await axiosInstance.get(`/dashboard/stats`);
     return response.data;
 }
+
+export const getNotif = async () => {
+    const response = await axiosInstance.get(`/notification`);
+    return response.data;
+}
