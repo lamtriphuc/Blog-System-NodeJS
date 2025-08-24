@@ -26,10 +26,9 @@ export class UsersController {
   @Post()
   async createUser(
     @Body(new ValidationPipe()) createUserDto: CreateUserDto
-  ): Promise<ResponseData<UserEntity>> {
-    console.log(createUserDto)
+  ) {
     const user = await this.usersService.createUser(createUserDto);
-    return new ResponseData<UserEntity>(user, HttpStatus.CREATED, 'Tạo tài khoản thành công');
+    return new ResponseData(user, HttpStatus.CREATED, 'Tạo tài khoản thành công');
   }
 
   @Put('/me')

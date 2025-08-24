@@ -7,6 +7,12 @@ export const loginUser = async ({ email, password }: { email: string, password: 
     return response.data;
 };
 
+export const registerUser = async (data: any) => {
+    const response = await axiosInstance.post('/users', data);
+    return response.data;
+};
+
+
 export const getUserProfile = async () => {
     const response = await axiosInstance.get('/auth/profile');
     return response.data;

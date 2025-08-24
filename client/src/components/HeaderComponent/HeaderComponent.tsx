@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./HeaderComponent.css";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store";
@@ -9,13 +9,11 @@ import { Dropdown } from "react-bootstrap";
 import { io, Socket } from "socket.io-client";
 import { useEffect, useRef, useState } from "react";
 
-
-
-
-
 const HeaderComponent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [keyword, setKeyword] = useState("");
+  const location = useLocation();
 
   const user = useSelector((state: RootState) => state.auth.user);
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -58,6 +56,27 @@ const HeaderComponent = () => {
     };
   }, [user?.id]);
 
+  const handleSearch = () => {
+    const trimmed = keyword.trim();
+    if (!trimmed) {
+      navigate("/");
+      return;
+    }
+
+    // nếu không ở /search thì điều hướng
+    if (location.pathname !== "/search") {
+      navigate(`/search?keyword=${encodeURIComponent(trimmed)}`);
+    } else {
+      // nếu đang ở search thì chỉ update query params
+      navigate(`?keyword=${encodeURIComponent(trimmed)}`, { replace: true });
+    }
+
+    // bắn event xuống SearchPage (nếu bạn muốn xử lý ngay lập tức)
+    window.dispatchEvent(new CustomEvent("doSearch", { detail: trimmed }));
+  };
+
+
+
   return (
     <div className="header d-flex">
       <div className="container d-flex align-items-center justify-content-between">
@@ -65,7 +84,16 @@ const HeaderComponent = () => {
           Forume
         </div>
         <div className="d-flex w-50">
-          <input className="form-control" type="text" placeholder="Tìm kiếm" />
+          <input
+            className="form-control"
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="Tìm kiếm" />
+          <button
+            onClick={handleSearch}
+            className="btn"
+            type="submit">Search</button>
         </div>
         <div className="right-block d-flex gap-4 align-items-center">
           <div className="create-post d-flex gap-1 align-items-center item px-2"

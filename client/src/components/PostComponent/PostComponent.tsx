@@ -9,6 +9,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSelector } from "../../store/hooks";
 import { useState } from "react";
 import { savePost } from "../../api/postApi";
+import { useNavigate } from "react-router-dom";
 
 type PostDetailsProps = {
   post: PostData;
@@ -22,6 +23,8 @@ const PostComponent: React.FC<PostDetailsProps> = ({ post, isBookmark = false, o
   const queryClient = useQueryClient();
   const user = useAppSelector(state => state.auth.user)
   const [localVoteType, setLocalVoteType] = useState(voteType);
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   const vote = async ({ postId, voteType }: { postId: number, voteType: number }) => {
     try {
@@ -82,6 +85,8 @@ const PostComponent: React.FC<PostDetailsProps> = ({ post, isBookmark = false, o
     }
     savePostMutation.mutate();
   }
+
+
 
   return (
     <div className="post-container" >

@@ -1,10 +1,7 @@
 import PostComponent from "../../components/PostComponent/PostComponent";
 import { getAllPost, getSavedPost, savePost } from "../../api/postApi";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import type { PostData } from "../../types";
-import { useDispatch } from "react-redux";
-import { clearUser } from "../../store/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getVoteByUser } from "../../api/voteApi";
@@ -12,18 +9,19 @@ import { setLoading } from "../../store/uiSlice";
 import { useEffect, useState } from "react";
 
 
-const HomePage = () => {
+const SearchPage = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch()
-  const [searchTerm, setSearchTerm] = useState("");
 
   const [page, setPage] = useState(1);
+  const keyword = searchParams.get("keyword") || "";
 
   const fetchAllPosts = async ({ queryKey }: any) => {
-    const [, page, searchTerm] = queryKey;
+    const [, page, keyword] = queryKey;
     try {
-      const response = await getAllPost(page, searchTerm);
+      const response = await getAllPost(page, keyword);
       return response.data;
     } catch (error: any) {
       const message = error?.response?.data?.message;
@@ -71,7 +69,7 @@ const HomePage = () => {
 
 
   const { data: postData } = useQuery({
-    queryKey: ['posts', page, searchTerm],
+    queryKey: ['posts', page, keyword],
     queryFn: fetchAllPosts,
     placeholderData: keepPreviousData
   })
@@ -90,8 +88,12 @@ const HomePage = () => {
 
   useEffect(() => {
     const handler = (e: any) => {
-      setSearchTerm(e.detail);
-      setPage(1); // reset về page 1 khi search
+      const k = e.detail.trim();
+      if (!k) {
+        navigate("/");
+      } else {
+        setPage(1); // reset page về 1 khi search mới
+      }
     };
 
     window.addEventListener("doSearch", handler);
@@ -100,7 +102,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <h5 className="py-2">Bài viết thú vị dành cho bạn</h5>
+      <h5 className="py-2">Tìm kiếm</h5>
       {postData?.posts?.map((post: any) => {
         return (
           <PostComponent
@@ -142,4 +144,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default SearchPage;

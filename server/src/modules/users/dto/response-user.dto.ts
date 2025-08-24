@@ -21,8 +21,8 @@ export class ResponseUserDto {
         this.avatarUrl = user.avatarUrl;
         this.role = user.role;
         this.createdAt = user.createdAt;
-        this.countPost = user.posts.length || 0;
-        this.countComment = user.comments.length || 0;
+        this.countPost = user.posts?.length || 0;
+        this.countComment = user.comments?.length || 0;
         this.bannedUntil = user.bannedUntil;
         this.isBanned = user.isBanned;
     }

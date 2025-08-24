@@ -28,9 +28,10 @@ export class PostsController {
   @Get()
   async getAllPost(
     @Query('page') page = 1,
-    @Query('limit') limit = 5
+    @Query('limit') limit = 5,
+    @Query('search') search?: string,
   ): Promise<any> {
-    const posts = await this.postsService.getAllPost(page, limit);
+    const posts = await this.postsService.getAllPost(page, limit, search);
     return new ResponseData(posts, HttpStatus.OK, 'Lấy bài viết thành công!');
   }
 

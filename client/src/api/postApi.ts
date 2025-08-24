@@ -1,7 +1,7 @@
 import axiosInstance from "./axios";
 
-export const getAllPost = async (page = 1) => {
-    const response = await axiosInstance.get(`/posts?page=${page}`);
+export const getAllPost = async (page = 1, searchTerm = '') => {
+    const response = await axiosInstance.get(`/posts?page=${page}&search=${encodeURIComponent(searchTerm)}`);
     return response.data;
 }
 

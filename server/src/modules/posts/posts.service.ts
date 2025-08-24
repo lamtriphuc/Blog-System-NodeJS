@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from 'src/entities/post.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UserEntity } from 'src/entities/user.entity';
 import { UpdatePostDto } from './dto/updata-post.dto';
@@ -128,16 +128,30 @@ export class PostsService {
     }
 
 
-    async getAllPost(page: number, limit: number) {
+    async getAllPost(page: number, limit, search?: string) {
+        const where: any = {};
+
+        if (search) {
+            where.title = Like(`%${search}%`); // 👈 search theo title
+            // hoặc nếu muốn search cả content:
+            // where = [
+            //   { title: Like(`%${search}%`) },
+            //   { content: Like(`%${search}%`) }
+            // ]
+        }
+
         const [posts, total] = await this.postRepository.findAndCount({
+            where,
             skip: (page - 1) * limit,
             take: limit,
             order: {
-                createdAt: 'DESC'
+                createdAt: 'DESC',
             },
-            relations: ['user', 'tags', 'images', 'votes', 'comments']
-        })
-        const res = posts.map(post => new PostResponseDto(post));
+            relations: ['user', 'tags', 'images', 'votes', 'comments'],
+        });
+
+        const res = posts.map((post) => new PostResponseDto(post));
+
         return {
             posts: res,
             total,

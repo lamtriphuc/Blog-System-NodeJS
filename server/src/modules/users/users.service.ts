@@ -52,11 +52,12 @@ export class UsersService {
         await this.userRepository.update(userId, { refreshToken: '' });
     }
 
-    async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
+    async createUser(createUserDto: CreateUserDto) {
         const { username, email, password } = createUserDto;
 
         const existingUser = await this.userRepository.findOne({
-            where: [{ username }, { email }] // username: username
+            where: [{ username }, { email }], // username: username
+            relations: ['posts', 'comments']
         })
 
         if (existingUser) {
@@ -76,7 +77,8 @@ export class UsersService {
         }
 
         const newUser = this.userRepository.create(user);
-        return this.userRepository.save(newUser);
+        const res = await this.userRepository.save(newUser);
+        return new ResponseUserDto(res)
     }
 
     async getAllUser(page: number, limit: number) {

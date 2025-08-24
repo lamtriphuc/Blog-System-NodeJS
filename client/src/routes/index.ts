@@ -16,11 +16,18 @@ import PostAdmin from "../components/AdminComponent/PostAdmin";
 import ReportAmdin from "../components/AdminComponent/ReportAdmin";
 import TagAdmin from "../components/AdminComponent/TagAdmin";
 import PostTagPage from "../pages/PostTagPage/PostTagPage";
+import SearchPage from "../pages/SearchPage/SearchPage";
 
 export const routes = [
   {
     path: "/",
     page: HomePage,
+    isShowHeader: true,
+    isShowSidebarRight: true,
+  },
+  {
+    path: "/search",
+    page: SearchPage,
     isShowHeader: true,
     isShowSidebarRight: true,
   },

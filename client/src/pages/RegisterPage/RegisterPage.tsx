@@ -1,14 +1,50 @@
 import { useState } from "react";
 import "./RegisterPage.css";
+import { toast } from "react-toastify";
+import { useAppDispatch } from "../../store/hooks";
+import { setLoading } from "../../store/uiSlice";
+import { registerUser } from "../../api/authApi";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [reTypePassword, setReTypePassword] = useState("");
   const [name, setName] = useState("");
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const register = async (data: any) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await registerUser(data);
+      toast.success(response.message)
+      navigate('/login')
+      //  { data, statusCode, message }
+      return response.data;
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Có lỗi xảy ra';
+      console.error('Lỗi khi sửa bài viết:', message);
+      toast.error(message);
+      throw new Error(message); // phải throw để mutation biết là lỗi
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+
+  const mutation = useMutation({
+    mutationKey: ['create-user'],
+    mutationFn: register,
+  })
 
   const handleLogin = () => {
     console.log(email, password, reTypePassword, name);
+    if (password !== reTypePassword) {
+      toast.error('Mật khẩu không khớp');
+      return;
+    }
+    mutation.mutate({ email, password, username: name });
   };
 
   return (
