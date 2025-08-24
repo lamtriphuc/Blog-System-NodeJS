@@ -29,7 +29,6 @@ const HomePage = () => {
       const message = error?.response?.data?.message;
       console.log('Lỗi: ', message);
       toast.error('Lỗi: ', message);
-      return [];
     } finally {
       dispatch(setLoading(false)); // Đảm bảo tắt loading khi logout
     }
