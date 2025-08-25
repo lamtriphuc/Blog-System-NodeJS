@@ -10,6 +10,11 @@ export const getNotif = async () => {
     return response.data;
 }
 
+export const getUnread = async () => {
+    const response = await axiosInstance.get(`/notification/unread`);
+    return response.data;
+}
+
 export const markedRead = async (id: number) => {
     const response = await axiosInstance.patch(`/notification/${id}/read`);
     return response.data;

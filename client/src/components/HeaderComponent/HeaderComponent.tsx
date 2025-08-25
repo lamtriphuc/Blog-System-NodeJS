@@ -8,6 +8,9 @@ import { clearUser } from "../../store/authSlice";
 import { Dropdown } from "react-bootstrap";
 import { io, Socket } from "socket.io-client";
 import { useEffect, useRef, useState } from "react";
+import { getUnread } from "../../api/commonApi";
+import { setLoading } from "../../store/uiSlice";
+import { useQuery } from "@tanstack/react-query";
 
 const HeaderComponent = () => {
   const navigate = useNavigate();
@@ -22,6 +25,20 @@ const HeaderComponent = () => {
   const socket = io(import.meta.env.VITE_SOCKET_URL, {
     query: { userId: user?.id },
   });
+
+  const fetchUnread = async () => {
+    try {
+      const response = await getUnread();
+      setNotifications(response.data);
+      return response.data;
+    } catch (error: any) {
+      const message = error?.response?.data?.message;
+      console.log('Lỗi: ', message);
+      toast.error('Lỗi: ', message);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
 
   const handleLogout = async () => {
     try {
@@ -39,13 +56,13 @@ const HeaderComponent = () => {
   useEffect(() => {
     if (!user?.id) return; // chỉ connect khi có user
 
+    fetchUnread();
+
     // tạo kết nối socket 1 lần
     socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
       query: { userId: user.id },
       transports: ["websocket"],
     });
-
-    socketRef.current.on("connect", () => { });
 
     socketRef.current.on("notification", (data) => {
       setNotifications((prev) => [data, ...prev]);
@@ -74,8 +91,6 @@ const HeaderComponent = () => {
     // bắn event xuống SearchPage (nếu bạn muốn xử lý ngay lập tức)
     window.dispatchEvent(new CustomEvent("doSearch", { detail: trimmed }));
   };
-
-
 
   return (
     <div className="header d-flex">

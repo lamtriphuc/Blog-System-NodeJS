@@ -15,6 +15,17 @@ export class NotificationController {
         return new ResponseData(notifs, HttpStatus.OK, 'Lấy thông báo thành công')
     }
 
+    @Get('unread')
+    async getUnread(@Req() req) {
+        const notifs = await this.notificationsService.getUnreadNotifications(req.user.id);
+        return new ResponseData(notifs, HttpStatus.OK, 'Lấy thông báo chưa đọc');
+    }
+
+    @Patch('read-all')
+    async markAllRead(@Req() req) {
+        return this.notificationsService.markAllAsRead(req.user.id);
+    }
+
     // Đánh dấu 1 thông báo là đã đọc
     @Patch(':id/read')
     async markRead(@Param('id') id: number) {

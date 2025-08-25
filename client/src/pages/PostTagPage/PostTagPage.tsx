@@ -68,7 +68,7 @@ const PostTagPage = () => {
 
 
     const { data: postData } = useQuery({
-        queryKey: ['posts', page],
+        queryKey: ['posts', page, tagId],
         queryFn: fetchAllPosts,
         placeholderData: keepPreviousData
     })

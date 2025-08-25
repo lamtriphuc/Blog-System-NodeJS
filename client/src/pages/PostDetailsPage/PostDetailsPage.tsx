@@ -243,7 +243,7 @@ const PostDetailsPage = () => {
 
     useEffect(() => {
         if (savedPosts && savedPosts.length > 0) {
-            const post = savedPosts.find((p: any) => p?.id === postDetails.id);
+            const post = savedPosts.find((p: any) => p?.id === postDetails?.id);
             if (post) {
                 setIsBookmark(true);
             } else {

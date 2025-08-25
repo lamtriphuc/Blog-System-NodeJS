@@ -32,4 +32,16 @@ export class NotificationsService {
         await this.notificationRepo.update(id, { isRead: true });
         return { success: true };
     }
+
+    async markAllAsRead(userId: number) {
+        await this.notificationRepo.update({ user: { id: userId } }, { isRead: true });
+        return { success: true };
+    }
+
+    async getUnreadNotifications(userId: number) {
+        return await this.notificationRepo.find({
+            where: { user: { id: userId }, isRead: false },
+            order: { createdAt: 'DESC' },
+        });
+    }
 }

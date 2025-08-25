@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 
 
-
 const TagPage = () => {
   const [search, setSearch] = useState("");
 
